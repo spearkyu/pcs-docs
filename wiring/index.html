@@ -1,0 +1,1349 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<style>body{margin:0}img{max-width:100%}</style>
+<title>PCS 핀맵·배선도</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: 전체 개요도(구역 클릭) → 고정 탭 4개(전원·통신 / 보드 A / 보드 B·C / 변경점·미정) → 탭별 작은 도면 카드. 카드는 폭에 따라 1~3열로 흐름 */
+:root{
+  --bg:#eef2f0; --surface:#fbfcfb; --ink:#16201b; --muted:#5b6862; --line:#d3dcd7; --line-strong:#97a59e;
+  --accent:#17784b; --accent-soft:#dcefe4;
+  --pcb:#1b2220; --pcb-2:#0e1312; --pcb-ink:#e3eae6; --term:#2e9a5b; --screw:#c3cbc7;
+  --w33:#df7a0f; --w5:#d03c3c; --w12:#8752cc; --w19:#9a6a14; --gnd:#27312d; --sig:#2a66d2; --sda:#0c9284; --scl:#7a8812; --ac:#8a5a32; --usb:#5a6a7e; --ir:#d2336b; --white-wire:#b9c2bd;
+  --ok:#17784b; --ok-bg:#dcefe4; --tbd:#69746f; --tbd-bg:#e5e9e7; --doc:#3656a6; --doc-bg:#e1e7f6; --rsv:#8a6a12; --rsv-bg:#f4ecd4; --risk:#b2361f; --risk-bg:#f8e1db;
+  --f-body:"IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1412; --surface:#161d1a; --ink:#e2eae6; --muted:#97a59e; --line:#28332f; --line-strong:#4a5953;
+  --accent:#4cc38a; --accent-soft:#17322a;
+  --pcb:#222b28; --pcb-2:#131917; --pcb-ink:#e3eae6; --term:#2b8a52; --screw:#aeb7b3;
+  --w33:#f0963a; --w5:#ee6a6a; --w12:#ad85ea; --w19:#d3a24a; --gnd:#c2cbc7; --sig:#6e9df0; --sda:#2cc1b2; --scl:#b3c03a; --ac:#c08a5c; --usb:#8ea0b5; --ir:#f06392; --white-wire:#e8eeeb;
+  --ok:#4cc38a; --ok-bg:#17322a; --tbd:#a0aba6; --tbd-bg:#232c29; --doc:#8ea7ee; --doc-bg:#1c253e; --rsv:#e0b44c; --rsv-bg:#33290f; --risk:#f0846c; --risk-bg:#3a1c15;
+  color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0f1412; --surface:#161d1a; --ink:#e2eae6; --muted:#97a59e; --line:#28332f; --line-strong:#4a5953;
+  --accent:#4cc38a; --accent-soft:#17322a;
+  --pcb:#222b28; --pcb-2:#131917; --pcb-ink:#e3eae6; --term:#2b8a52; --screw:#aeb7b3;
+  --w33:#f0963a; --w5:#ee6a6a; --w12:#ad85ea; --w19:#d3a24a; --gnd:#c2cbc7; --sig:#6e9df0; --sda:#2cc1b2; --scl:#b3c03a; --ac:#c08a5c; --usb:#8ea0b5; --ir:#f06392; --white-wire:#e8eeeb;
+  --ok:#4cc38a; --ok-bg:#17322a; --tbd:#a0aba6; --tbd-bg:#232c29; --doc:#8ea7ee; --doc-bg:#1c253e; --rsv:#e0b44c; --rsv-bg:#33290f; --risk:#f0846c; --risk-bg:#3a1c15;
+  color-scheme:dark }
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-padding-top:72px}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6}
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px;display:grid;gap:22px}
+h1,h2,h3{text-wrap:balance;margin:0;line-height:1.25}
+h1{font-size:clamp(23px,4vw,30px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:19px;font-weight:700}
+h3{font-size:15.5px;font-weight:600}
+p{margin:0;max-width:70ch}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.muted{color:var(--muted)}
+.mono{font-family:var(--f-mono);font-size:.92em}
+
+header.doc{display:grid;gap:10px;border-bottom:2px solid var(--ink);padding-bottom:16px}
+.meta{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:12.5px;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:600;font-family:var(--f-mono);font-size:12px}
+
+/* 개요 */
+.overview{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px}
+.overview .head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 16px}
+.ov svg{display:block;width:100%;height:auto}
+.ov .ov-tall{display:none;max-width:420px;margin:0 auto}
+@media (max-width:720px){ .ov .ov-wide{display:none} .ov .ov-tall{display:block} }
+
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--muted);align-items:center}
+.sw{display:inline-block;width:22px;height:0;border-top:3px solid;vertical-align:middle;margin-right:5px}
+.sw.dash{border-top-style:dashed}
+
+/* 탭 */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:5px;display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.tabs button{font:inherit;font-size:14px;font-weight:600;color:var(--muted);background:none;border:0;border-radius:7px;padding:9px 6px;cursor:pointer;line-height:1.3}
+.tabs button small{display:block;font-weight:400;font-size:11.5px}
+.tabs button:hover{background:var(--bg);color:var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--surface)}
+.tabs button[aria-selected="true"] small{color:var(--surface);opacity:.75}
+.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:560px){ .tabs{grid-template-columns:repeat(2,1fr)} .tabs button:first-child{grid-column:1/-1} .tabs button{font-size:13.5px;padding:7px 4px} .tabs button small{display:none} }
+
+.panel{display:grid;gap:18px}
+.panel-head{display:grid;gap:4px}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:14px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:12px;min-width:0}
+.card .ch{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.card svg{display:block;width:100%;max-width:560px;height:auto;margin:0 auto}
+
+.pill{display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;padding:0 9px;border-radius:999px;white-space:nowrap;line-height:1.8}
+.st-ok{color:var(--ok);background:var(--ok-bg)}
+.st-tbd{color:var(--tbd);background:var(--tbd-bg);outline:1px dashed var(--tbd);outline-offset:-1px}
+.st-doc{color:var(--doc);background:var(--doc-bg)}
+.st-rsv{color:var(--rsv);background:var(--rsv-bg)}
+
+/* 배선 목록 */
+.wl{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--line)}
+.wl li{display:grid;grid-template-columns:48px 1fr auto;gap:2px 10px;align-items:baseline;padding:7px 2px;border-bottom:1px solid var(--line);font-size:13px}
+.wl .wid{font-family:var(--f-mono);font-size:12px;font-weight:600}
+.wl .wd{min-width:0}
+.wl .wd small{display:block;color:var(--muted);font-size:12px}
+
+/* 전원 목록 */
+.prow{display:grid;grid-template-columns:minmax(150px,1fr) 28px minmax(170px,1.3fr) auto;gap:8px 12px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line)}
+.prow:last-child{border-bottom:0}
+.prow .src{display:flex;gap:8px;align-items:center}
+.vchip{font-family:var(--f-mono);font-size:11.5px;font-weight:600;border:2px solid;border-radius:6px;padding:0 6px;line-height:1.6;white-space:nowrap}
+.vchip.dash{border-style:dashed}
+.prow .arrow{color:var(--muted);text-align:center}
+.prow b{font-weight:600}
+.prow small{display:block;color:var(--muted);font-size:12px}
+@media (max-width:560px){ .prow{grid-template-columns:1fr auto} .prow .arrow{display:none} .prow .load{grid-column:1/2;padding-left:2px} .prow .pill{grid-row:1;grid-column:2} }
+
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.chain .n{border:1px solid var(--line-strong);background:var(--surface);border-radius:8px;padding:6px 10px;font-size:13px;line-height:1.35}
+.chain .n.doc{background:var(--doc-bg);border-color:var(--doc)}
+.chain .n.pcb{background:var(--pcb);color:var(--pcb-ink);border-color:var(--pcb)}
+.chain .n small{display:block;font-size:11.5px;opacity:.75}
+.chain .ar{color:var(--muted);font-family:var(--f-mono);font-size:12px}
+
+.facts{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:13.5px}
+.facts li{display:grid;grid-template-columns:110px 1fr;gap:10px}
+.facts li span:first-child{color:var(--muted)}
+@media (max-width:480px){ .facts li{grid-template-columns:1fr;gap:0} }
+
+/* 표 → 휴대폰에서 카드 */
+.tbl{border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;font-weight:600;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:none}
+td.m{font-family:var(--f-mono);font-size:12.5px;white-space:nowrap}
+tbody tr[data-term]{cursor:pointer}
+tbody tr[data-term]:hover,tbody tr[data-term]:focus-visible,tbody tr.hl{background:var(--accent-soft);outline:none}
+@media (max-width:640px){
+  .rt thead{display:none}
+  .rt tr{display:grid;gap:3px;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .rt tr:last-child{border-bottom:0}
+  .rt td{display:grid;grid-template-columns:76px 1fr;gap:8px;padding:0;border:0}
+  .rt td::before{content:attr(data-label);color:var(--muted);font-size:12px;font-family:var(--f-body)}
+  .rt td.m{white-space:normal}
+}
+
+details.more{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+details.more summary{cursor:pointer;padding:12px 14px;font-weight:600;font-size:14px}
+details.more summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:10px}
+details.more .scroll{overflow-x:auto;padding:0 10px 12px}
+details.more svg{display:block;width:100%;min-width:640px;height:auto}
+
+.callout{border-left:3px solid var(--risk);background:var(--risk-bg);padding:10px 14px;border-radius:0 8px 8px 0;font-size:13.5px}
+.callout b{color:var(--risk)}
+.notes{margin:0;padding-left:18px;display:grid;gap:4px;font-size:13.5px;color:var(--muted)}
+footer{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;display:grid;gap:4px}
+
+/* SVG 공통 */
+svg text{font-family:var(--f-body);fill:var(--ink);font-size:12.5px}
+svg .sm{font-size:11px;fill:var(--muted)}
+svg .xs{font-size:10px;fill:var(--muted);font-family:var(--f-mono)}
+svg .b{font-weight:600}
+svg .mono{font-family:var(--f-mono)}
+svg .pk{fill:var(--pcb-ink);font-family:var(--f-mono);font-size:10.5px}
+svg .pk-t{fill:var(--pcb-ink);font-weight:600;font-size:13px}
+svg .pk-d{fill:var(--pcb-ink);opacity:.62;font-size:10px}
+svg .bx{fill:var(--surface);stroke:var(--line-strong);stroke-width:1.2}
+svg .bx-doc{fill:var(--doc-bg);stroke:var(--doc);stroke-width:1}
+svg .bx-tbd{fill:var(--tbd-bg);stroke:var(--tbd);stroke-width:1.2;stroke-dasharray:5 4}
+svg .bx-src{fill:var(--bg);stroke:var(--line-strong);stroke-width:1.2}
+svg .pcb{fill:var(--pcb)} svg .pcb2{fill:var(--pcb-2)} svg .term{fill:var(--term)} svg .screw{fill:var(--screw)} svg .bgfill{fill:var(--bg)}
+svg .wire{fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+svg .dash{stroke-dasharray:6 5}
+svg .w33{stroke:var(--w33)} svg .w5{stroke:var(--w5)} svg .w12{stroke:var(--w12)}
+svg .gnd{stroke:var(--gnd)} svg .sig{stroke:var(--sig)} svg .sda{stroke:var(--sda)} svg .scl{stroke:var(--scl)}
+svg .usb{stroke:var(--usb)} svg .wht{stroke:var(--white-wire);stroke-width:4}
+svg .ir{stroke:var(--ir);stroke-dasharray:2 5;stroke-width:3}
+svg .tbdw{stroke:var(--tbd)}
+svg .dot{fill:var(--ink)}
+svg .chip{fill:var(--bg);stroke-width:2}
+/* 개요 구역 */
+svg .zone{cursor:pointer}
+svg .zone .zr{fill:var(--accent-soft);fill-opacity:0;stroke:var(--line);stroke-width:1.2;stroke-dasharray:4 4;transition:fill-opacity .15s}
+svg .zone:hover .zr,svg .zone:focus-visible .zr,svg .zone.on .zr{fill-opacity:1}
+svg .zone:hover .zr,svg .zone:focus-visible .zr{fill:var(--accent-soft);stroke:var(--accent)}
+svg .zone.on .zr{fill:var(--accent-soft);stroke:var(--accent);stroke-dasharray:none;stroke-width:1.6}
+svg .zone:focus{outline:none}
+svg .zl{font-size:11.5px;font-weight:600;fill:var(--accent)}
+/* 핀맵 */
+svg .term-g .ring{fill:none;stroke-width:3}
+svg .term-g.hl .ring{stroke-width:6}
+svg .term-g.hl .ann{font-weight:700}
+svg .bar{stroke-width:4;stroke-linecap:round}
+@media (prefers-reduced-motion:reduce){ svg .zone .zr{transition:none} }
+
+/* 차량 배치 */
+.st-est{color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.vtools{display:flex;flex-wrap:wrap;gap:6px}
+.vtools button,.zoom button{font:inherit;font-size:13px;line-height:1.4;padding:4px 11px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:999px;cursor:pointer}
+.vtools button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.vtools button:focus-visible,.zoom button:focus-visible,.pi:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.vgrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:12px;align-items:start}
+.vleft{display:grid;gap:8px;min-width:0}
+.stage{position:relative;border:1px solid var(--line);border-radius:8px;background:var(--bg);overflow:hidden;height:clamp(300px,46vw,520px)}
+.stage canvas{display:block;width:100%;height:100%;touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none}
+button,summary,[data-key],[data-zone],[data-term]{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.stage canvas:active{cursor:grabbing}
+.stage .hint{position:absolute;left:10px;bottom:8px;font-size:11.5px;color:var(--muted);pointer-events:none}
+.zoom{position:absolute;right:8px;top:8px;display:grid;gap:4px}
+.zoom button{width:32px;height:32px;padding:0;font-size:17px;border-radius:8px}
+.vinfo{font-size:13px;color:var(--muted);min-height:1.6em}
+.vinfo b{color:var(--ink)}
+.vside{overflow:auto;max-height:clamp(300px,46vw,520px);min-width:0}
+.plist{display:grid;gap:1px;align-content:start}
+.plist h4{font-size:12px;color:var(--muted);margin:8px 6px 2px;font-weight:600}
+.plist h4:first-child{margin-top:0}
+.pi{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;text-align:left;font:inherit;font-size:13px;line-height:1.35;background:none;border:0;border-radius:7px;padding:6px;cursor:pointer;color:var(--ink)}
+.pi:hover{background:var(--bg)}
+.pi.hl{background:var(--accent-soft)}
+.pi small{display:block;color:var(--muted);font-size:11.5px}
+.no{width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--surface);font:600 11px/22px var(--f-mono);text-align:center}
+.pi.hl .no{background:var(--accent)}
+@media (max-width:860px){ .vgrid{grid-template-columns:1fr} .vside{max-height:none} }
+/* 상세 카드 */
+.vdet{display:grid;gap:10px;align-content:start;padding:2px 2px 6px}
+.vdet .back{justify-self:start;font:inherit;font-size:12.5px;font-weight:600;border:0;background:none;color:var(--accent);cursor:pointer;padding:2px 0}
+.vdet h4{margin:0;font-size:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.vdet .where{font-size:12.5px;color:var(--muted);margin-top:-6px}
+.dg{display:grid;grid-template-columns:78px minmax(0,1fr);align-items:stretch}
+.dg-c{border:1.5px solid var(--ink);background:var(--surface);border-radius:8px;padding:8px 5px;font-size:12.5px;font-weight:600;line-height:1.3;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.dg-c.pcb{background:var(--pcb);color:var(--pcb-ink);border-color:var(--pcb)}
+.dg-c small{display:block;font-weight:400;font-size:10.5px;opacity:.75}
+.dg-rows{display:grid;gap:6px;padding:4px 0}
+.dg-r{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:center;font:inherit;text-align:left;background:none;border:0;padding:0;color:var(--ink)}
+button.dg-r{cursor:pointer}
+.dg-w{position:relative;align-self:stretch;min-height:34px}
+.dg-w::before{content:"";position:absolute;left:0;right:6px;top:50%;border-top:3px solid var(--c)}
+.dg-w::after{content:"";position:absolute;right:0;top:50%;margin-top:-4.5px;border-style:solid;border-width:6px 0 6px 8px;border-color:transparent transparent transparent var(--c)}
+.dg-w.in::before{left:6px;right:0}
+.dg-w.in::after{right:auto;left:0;border-width:6px 8px 6px 0;border-color:transparent var(--c) transparent transparent}
+.dg-w.dash::before{border-top-style:dashed}
+.dg-w i{position:absolute;left:2px;right:2px;bottom:calc(50% + 3px);text-align:center;font:500 10px/1.2 var(--f-mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dg-d{border:1px solid var(--line-strong);border-radius:7px;padding:5px 8px;font-size:12.5px;line-height:1.35;background:var(--surface);min-width:0}
+.dg-d small{display:block;color:var(--muted);font-size:11px}
+button.dg-r:hover .dg-d,button.dg-r:focus-visible .dg-d{border-color:var(--accent)}
+button.dg-r:focus-visible{outline:none}
+.fan{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.fan span{background:var(--pcb);color:var(--pcb-ink);border-radius:5px;padding:1px 6px;font-size:11px}
+.encl{border:1.5px dashed var(--line-strong);border-radius:10px;padding:10px;display:grid;gap:14px}
+.encl-h{font-size:12px;font-weight:600;color:var(--muted)}
+.say{font-size:12.5px;margin:4px 0 0;color:var(--ink)}
+.say b{font-weight:600}
+.vtips{margin:0;padding-left:16px;font-size:12.5px;color:var(--muted);display:grid;gap:3px}
+.plan svg{display:block;width:100%;height:auto}
+.plan .plan-tall{display:none;max-width:420px;margin:0 auto}
+@media (max-width:720px){ .plan .plan-wide{display:none} .plan .plan-tall{display:block} }
+svg .car{fill:var(--surface);stroke:var(--ink);stroke-width:1.6}
+svg .band{fill:var(--accent-soft);fill-opacity:.9}
+svg .band.b2{fill-opacity:.45}
+svg .int{fill:var(--bg);stroke:var(--line-strong);stroke-width:1}
+svg .arm{fill:var(--line)}
+svg .whl{fill:var(--gnd)}
+svg .vr{fill:none;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round;cursor:pointer}
+svg .vp{stroke:var(--ink);stroke-width:1;cursor:pointer}
+svg .mk{cursor:pointer}
+svg .mk circle{fill:var(--ink)}
+svg .mk text{fill:var(--surface);font-family:var(--f-mono);font-size:10.5px;font-weight:600}
+svg .mk.on circle{fill:var(--accent)}
+svg .dim{opacity:.15}
+svg .vr.on{stroke-width:4}
+tbody tr[data-key]{cursor:pointer}
+tbody tr[data-key]:hover,tbody tr[data-key]:focus-visible,tbody tr[data-key].hl{background:var(--accent-soft);outline:none}
+.callout.ask{border-left-color:var(--accent);background:var(--accent-soft)}
+.callout.ask b{color:var(--accent)}
+.checks{margin:0;padding-left:18px;display:grid;gap:5px;font-size:13.5px}
+.checks b{font-weight:600}
+</style>
+
+<div class="wrap">
+
+<header class="doc">
+  <div class="eyebrow">Passenger Care Service · 제어 보드 배선</div>
+  <h1>PCS 핀맵·배선도</h1>
+  <p class="muted">차량 1대분 제어 보드 3개의 배선과 차량 안 배치를 정리했습니다. 아래 전체 배선도에서 구역을 누르면 해당 탭으로 이동합니다. 아직 받지 못한 정보는 <span class="pill st-tbd">미정</span>, 실차 확인 전 위치·길이는 <span class="pill st-est">추정</span>으로 표시했습니다.</p>
+  <div class="meta">
+    <span>버전 <b>v0.3 초안</b></span>
+    <span>작성일 <b>2026-10-29</b></span>
+    <span>기준 펌웨어 <b>1.2.0-ir-pdlc-sen66</b></span>
+    <span>대조 문서 <b>회로도·배선도 v1.1</b></span>
+  </div>
+</header>
+
+<section class="overview" aria-label="전체 배선도">
+  <div class="head">
+    <h2>전체 배선도</h2>
+    <span class="muted" style="font-size:12.5px">구역을 누르면 상세 보기</span>
+  </div>
+  <div class="ov">
+    <svg class="ov-wide" id="ov-wide" viewBox="0 0 860 416" role="img" aria-label="전체 배선 개요 (가로)"></svg>
+    <svg class="ov-tall" id="ov-tall" viewBox="0 0 380 632" role="img" aria-label="전체 배선 개요 (세로)"></svg>
+  </div>
+  <div class="legend">
+    <span><span class="sw" style="border-color:var(--usb)"></span>USB</span>
+    <span><span class="sw" style="border-color:var(--sig)"></span>제어 신호</span>
+    <span><span class="sw" style="border-color:var(--sda)"></span>I2C</span>
+    <span><span class="sw dash" style="border-color:var(--tbd)"></span>미정</span>
+    <span><span class="vchip" style="border-color:var(--w12)">12V</span> 기기 전원 (파워뱅크에서 공급)</span>
+  </div>
+</section>
+
+<div class="tabs" role="tablist" aria-label="상세 보기">
+  <button role="tab" id="tab-vehicle" aria-controls="vehicle" aria-selected="false">차량 배치<small>3D · 평면도 · 요청</small></button>
+  <button role="tab" id="tab-system" aria-controls="system" aria-selected="false">전원·통신<small>파워뱅크 · 허브</small></button>
+  <button role="tab" id="tab-board-a" aria-controls="board-a" aria-selected="true">보드 A<small>IR · PDLC · SEN66</small></button>
+  <button role="tab" id="tab-board-bc" aria-controls="board-bc" aria-selected="false">보드 B·C<small>UVC · LED · 후방</small></button>
+  <button role="tab" id="tab-changes" aria-controls="changes" aria-selected="false">변경점·미정<small>문서 대비</small></button>
+</div>
+
+<!-- 차량 배치 -->
+<section class="panel" id="vehicle" role="tabpanel" aria-labelledby="tab-vehicle" hidden>
+  <div class="panel-head">
+    <h2>차량 배치 · 토레스 EVX</h2>
+    <p class="muted">공개 제원(전장 4,715 · 전폭 1,890 · 전고 1,735 · 축거 2,680mm) 비율만 맞춘 단순 블록입니다. 제어 장비는 모두 트렁크에 두고, 필요한 선을 연장해 1열·2열 설치 위치까지 보냅니다. 배선은 도착 지점만 정하고 경로는 작업자 판단에 맡깁니다.</p>
+  </div>
+  <div class="card">
+    <div class="ch">
+      <h3>3D 배치</h3>
+      <div class="vtools" id="v-tools" role="group" aria-label="시점">
+        <button data-view="all" aria-pressed="true">전체</button>
+        <button data-view="top" aria-pressed="false">위</button>
+        <button data-view="side" aria-pressed="false">우측면</button>
+        <button data-view="r1" aria-pressed="false">1열</button>
+        <button data-view="trunk" aria-pressed="false">트렁크</button>
+      </div>
+    </div>
+    <div class="vgrid">
+      <div class="vleft">
+        <div class="stage" id="v-stage">
+          <canvas id="v-canvas" role="img" aria-label="차량 3D 배치도"></canvas>
+          <span class="hint">드래그 회전 · 두 손가락·휠·± 확대</span>
+          <div class="zoom"><button data-zoom="0.8" aria-label="확대">+</button><button data-zoom="1.25" aria-label="축소">−</button></div>
+        </div>
+        <div class="callout" id="v-fallback" hidden>이 환경에서는 3D를 표시할 수 없습니다. 아래 평면도와 목록을 참고해 주세요.</div>
+        <p class="vinfo" id="v-info" aria-live="polite">부품을 누르면 연결 구성 그림이 나옵니다.</p>
+      </div>
+      <div class="vside" id="v-side"><div class="plist" id="v-list"></div><div class="vdet" id="v-detail" hidden></div></div>
+    </div>
+    <div class="legend">
+      <span><span class="sw" style="border-color:var(--sig)"></span>IR·LED 신호</span>
+      <span><span class="sw" style="border-color:var(--sda)"></span>I2C</span>
+      <span><span class="sw" style="border-color:var(--w12)"></span>12V</span>
+      <span><span class="sw" style="border-color:var(--w5)"></span>5V</span>
+      <span><span class="sw" style="border-color:var(--white-wire)"></span>PDLC 필름</span>
+      <span><span class="sw dash" style="border-color:var(--tbd)"></span>미정</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><h3>평면도 · 위에서 본 모습</h3><span class="muted" style="font-size:12px">작업지시서 첨부용 · 위치는 추정</span></div>
+    <div class="plan">
+      <svg class="plan-wide" id="plan-wide" viewBox="0 0 880 420" role="img" aria-label="차량 평면 배치도 (가로)"></svg>
+      <svg class="plan-tall" id="plan-tall" viewBox="0 0 360 650" role="img" aria-label="차량 평면 배치도 (세로)"></svg>
+    </div>
+  </div>
+
+  <div class="panel-head">
+    <h3>연장 배선</h3>
+    <p class="muted" style="font-size:13px">길이는 그림 경로에 여유 20%를 더한 추정값입니다. 실차에서 경로를 정한 뒤 확정합니다.</p>
+  </div>
+  <div class="tbl"><table class="rt" id="veh-routes"></table></div>
+
+  <div class="panel-head" style="margin-top:6px">
+    <h2>리워크샵 요청 사항</h2>
+    <p class="muted">구역별로 정리했습니다. 괄호 안 번호는 위 연장 배선 ID입니다.</p>
+  </div>
+  <div class="cards">
+    <div class="card">
+      <div class="ch"><h3>트렁크</h3><span class="pill st-ok">배치 확정</span></div>
+      <div class="callout ask"><b>통합 함체 1개 제작.</b> 보드 A·B·C, 2채널 릴레이 2개(PDLC용·UVC용), USB 허브를 함체 하나에 넣습니다. <b>고급스러운 마감과 사용 편리성을 최대한 고려해 주세요.</b></div>
+      <ul class="checks">
+        <li><b>마감</b>: 차량 내장재와 어울리는 색·질감, 모서리 라운드, 나사와 케이블 노출 최소화</li>
+        <li><b>점검</b>: 덮개를 쉽게 열 수 있어 보드 점검·교체가 편하게</li>
+        <li><b>펌웨어</b>: 보드 USB-C에 노트북을 연결할 수 있는 접근 경로</li>
+        <li><b>배선</b>: 케이블 인출구(그로밋), 커넥터로 분리 가능, 함체 안 배선 라벨</li>
+        <li><b>발열·고정</b>: 통풍구 확보, 주행 중 움직이지 않되 탈거 가능하게</li>
+        <li><b>크기</b>: 내부 부품 실물 기준으로 결정 (도면 치수 없음)</li>
+        <li>파워뱅크는 이동하지 않게 고정하고 전원 버튼·출력 포트·충전 단자에 손이 닿게</li>
+        <li>미니 PC·PDLC 제어기·어댑터 고정과 선 정리, 미니 PC 통풍 확보</li>
+        <li>짐 공간을 최대한 남기는 배치 (그림의 트렁크 내부 배치는 예시)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="ch"><h3>1열</h3><span class="pill st-ok">위치 확정</span></div>
+      <ul class="checks">
+        <li><b>공기청정기</b>: 좌석 사이 암레스트 위 고정, 미끄럼 방지·탈거 가능. 암레스트 수납함 열 때 간섭 확인 (V-01·V-03)</li>
+        <li><b>디퓨저</b>: 컵홀더 거치, 흔들림 방지 (V-02·V-04)</li>
+        <li><b>IR 송신모듈</b>: 각 기기 IR 수신부 가까이 부착하고 겉으로 드러나지 않게 정리</li>
+        <li><b>UVC 모듈</b>: 조수석 시트 하단에 2열 쪽을 향하게 브래킷 고정, 시트 앞뒤 이동 간섭 확인 (V-06)</li>
+        <li>전원선·신호선은 콘솔 측면·하부로 숨김</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="ch"><h3>2열</h3><span class="pill st-tbd">일부 미정</span></div>
+      <ul class="checks">
+        <li><b>PDLC 필름</b>: 우측 뒷창 시공, 제어기 선을 도어 안으로 인입 (V-07)</li>
+        <li><b>LED 스트랩</b>: 우측 뒷창 주변 부착, 부착 형태는 협의 (V-08·V-09)</li>
+        <li><b>SEN66</b>: 위치 미정. 승객 호흡 높이 근처에서 센서 흡배기구를 막지 않고 에어컨 바람이 직접 닿지 않는 곳 (그림은 1열 콘솔 후면 가정, V-05)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="ch"><h3>공통</h3></div>
+      <ul class="checks">
+        <li>배선은 내장재 안쪽으로 숨기고 노출을 최소화</li>
+        <li>경로는 작업자 판단, 표의 도착 지점까지만 오면 됨</li>
+        <li>각 선 양 끝에 배선 ID 라벨 (V-01 등)</li>
+        <li>기기 쪽 끝은 커넥터로 분리 가능하게</li>
+        <li>길이는 추정값이니 실차에서 여유 있게 재단</li>
+        <li>후방센서·빔프로젝터는 위치 미정이라 확정 후 추가 요청</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 전원·통신 -->
+<section class="panel" id="system" role="tabpanel" aria-labelledby="tab-system" hidden>
+  <div class="panel-head">
+    <h2>전원·통신</h2>
+    <p class="muted">트렁크 파워뱅크가 모든 기기 전원을 공급하고, 제어 보드는 USB 허브에서 통신과 5V를 함께 받습니다.</p>
+  </div>
+  <div class="cards">
+    <div class="card">
+      <div class="ch"><h3>전원 계통</h3><span class="muted" style="font-size:12px">파워뱅크 EcoFlow · 모델·포트 배정 미정</span></div>
+      <div id="power-list"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><h3>통신 경로</h3><span class="pill st-doc">허브 앞단은 문서 기준</span></div>
+      <div class="chain">
+        <span class="n doc">OCU<small>차량</small></span><span class="ar">USB→LAN</span>
+        <span class="n doc">미니 PC<small>MQTT 192.168.50.10</small></span><span class="ar">USB</span>
+        <span class="n doc">유전원 USB 허브</span><span class="ar">USB</span>
+        <span class="n pcb">보드 A · B · C</span>
+      </div>
+      <ul class="facts">
+        <li><span>시리얼</span><span>115200bps 8N1, JSON 한 줄 + CRC16</span></li>
+        <li><span>보드 식별</span><span>hello의 boardId·deviceId 목록 (COM 번호 무관)</span></li>
+        <li><span>연결 유지</span><span>heartbeat 2초, 10초 끊기면 보드가 출력 OFF</span></li>
+        <li><span>보드 A ID</span><span class="mono">PCS-IN-01</span></li>
+        <li><span>보드 B·C ID</span><span><span class="pill st-tbd">미정</span></span></li>
+        <li><span>빔프로젝터</span><span>연결 방식·설치 위치 미정</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 보드 A -->
+<section class="panel" id="board-a" role="tabpanel" aria-labelledby="tab-board-a">
+  <div class="panel-head">
+    <h2>보드 A · PCS-IN-01</h2>
+    <p class="muted">ESP32-S3-N16R8 + 44P 터미널 어댑터. 작성 펌웨어와 실물 배선 기준으로 확정했습니다. 3.3V와 GND는 보드 안에서 하나로 이어져 있습니다.</p>
+  </div>
+  <div class="cards">
+    <div class="card">
+      <div class="ch"><h3>IR 송신 · 공기청정기·디퓨저</h3><span class="pill st-ok">확정</span></div>
+      <svg viewBox="0 0 370 300" role="img" aria-label="IR 송신 배선">
+        <rect class="pcb" x="10" y="20" width="92" height="260" rx="8"/>
+        <text x="56" y="152" text-anchor="middle" class="pk-t">보드 A</text>
+        <text x="96" y="64" text-anchor="end" class="pk">GPIO5</text><text x="96" y="84" text-anchor="end" class="pk">3.3V</text><text x="96" y="104" text-anchor="end" class="pk">GND</text>
+        <text x="96" y="204" text-anchor="end" class="pk">GPIO7</text><text x="96" y="224" text-anchor="end" class="pk">3.3V</text><text x="96" y="244" text-anchor="end" class="pk">GND</text>
+        <!-- #1 -->
+        <rect class="bx" x="150" y="44" width="76" height="72" rx="6"/>
+        <text x="150" y="38" class="sm">IR 송신모듈 #1</text>
+        <text x="158" y="64" class="xs">DAT</text><text x="158" y="84" class="xs">VCC</text><text x="158" y="104" class="xs">GND</text>
+        <rect x="222" y="70" width="8" height="20" rx="3" class="screw"/>
+        <path class="wire sig" d="M102 60 H150"/><path class="wire w33" d="M102 80 H150"/><path class="wire gnd" d="M102 100 H150"/>
+        <path class="wire ir" d="M232 80 H266"/>
+        <rect class="bx" x="266" y="34" width="96" height="92" rx="8"/>
+        <text x="276" y="56" class="b">공기청정기</text><text x="276" y="72" class="sm">ipuri · IR 수신부</text>
+        <rect class="chip" x="276" y="96" width="44" height="20" rx="5" style="stroke:var(--w12)"/><text x="298" y="110" text-anchor="middle" class="mono b" style="font-size:10.5px">12V</text>
+        <!-- #2 -->
+        <rect class="bx" x="150" y="184" width="76" height="72" rx="6"/>
+        <text x="150" y="178" class="sm">IR 송신모듈 #2</text>
+        <text x="158" y="204" class="xs">DAT</text><text x="158" y="224" class="xs">VCC</text><text x="158" y="244" class="xs">GND</text>
+        <rect x="222" y="210" width="8" height="20" rx="3" class="screw"/>
+        <path class="wire sig" d="M102 200 H150"/><path class="wire w33" d="M102 220 H150"/><path class="wire gnd" d="M102 240 H150"/>
+        <path class="wire ir" d="M232 220 H266"/>
+        <rect class="bx" x="266" y="174" width="96" height="92" rx="8"/>
+        <text x="276" y="196" class="b">디퓨저</text><text x="276" y="212" class="sm">IR 수신부</text>
+        <rect class="chip" x="276" y="236" width="44" height="20" rx="5" style="stroke:var(--w5)"/><text x="298" y="250" text-anchor="middle" class="mono b" style="font-size:10.5px">5V</text>
+        <text x="249" y="72" text-anchor="middle" class="xs">IR</text><text x="249" y="212" text-anchor="middle" class="xs">IR</text>
+      </svg>
+      <ul class="wl" id="wl-ir"></ul>
+    </div>
+
+    <div class="card">
+      <div class="ch"><h3>PDLC 릴레이</h3><span class="pill st-ok">확정</span></div>
+      <svg viewBox="0 0 370 250" role="img" aria-label="PDLC 릴레이 배선">
+        <rect class="pcb" x="10" y="20" width="92" height="110" rx="8"/>
+        <text x="20" y="40" class="pk-t" style="font-size:12px">보드 A</text>
+        <text x="96" y="64" text-anchor="end" class="pk">GPIO4</text><text x="96" y="89" text-anchor="end" class="pk">3.3/5V?</text><text x="96" y="114" text-anchor="end" class="pk">GND</text>
+        <rect class="bx" x="140" y="34" width="92" height="150" rx="6"/>
+        <text x="140" y="28" class="sm">2ch 릴레이</text>
+        <text x="148" y="64" class="xs">IN1</text><text x="148" y="89" class="xs">VCC</text><text x="148" y="114" class="xs">GND</text><text x="148" y="139" class="xs">IN2 ✕</text>
+        <text x="226" y="74" text-anchor="end" class="xs">COM</text><text x="226" y="104" text-anchor="end" class="xs">NO</text>
+        <text x="186" y="172" text-anchor="middle" class="xs">CH2 비어 있음</text>
+        <path class="wire sig" d="M102 60 H140"/><path class="wire w5 dash" d="M102 85 H140"/><path class="wire gnd" d="M102 110 H140"/>
+        <rect class="bx" x="272" y="44" width="90" height="90" rx="8"/>
+        <text x="280" y="38" class="sm">PDLC 제어기</text>
+        <text x="354" y="74" text-anchor="end" class="xs">T/C 흰선</text><text x="354" y="104" text-anchor="end" class="xs">T/C 검정</text>
+        <path class="wire wht" d="M232 70 H272"/><path class="wire gnd" d="M232 100 H272"/>
+        <rect class="bx-src" x="272" y="186" width="90" height="44" rx="8"/>
+        <text x="282" y="205" class="b" style="font-size:11.5px">파워뱅크</text><text x="282" y="220" class="xs">12V 상시</text>
+        <path class="wire w12" d="M317 186 V134"/>
+        <text x="20" y="160" class="sm">GPIO4 LOW → 접점 닫힘</text>
+        <text x="20" y="176" class="sm">→ T/C 흰선·검정선 단락</text>
+      </svg>
+      <ul class="wl" id="wl-pdlc"></ul>
+    </div>
+
+    <div class="card">
+      <div class="ch"><h3>SEN66 가스센서</h3><span class="pill st-ok">확정</span></div>
+      <svg viewBox="0 0 370 190" role="img" aria-label="SEN66 배선">
+        <rect class="pcb" x="10" y="20" width="92" height="140" rx="8"/>
+        <text x="20" y="40" class="pk-t" style="font-size:12px">보드 A</text>
+        <text x="96" y="64" text-anchor="end" class="pk">3.3V</text><text x="96" y="89" text-anchor="end" class="pk">GND</text><text x="96" y="114" text-anchor="end" class="pk">GPIO8</text><text x="96" y="139" text-anchor="end" class="pk">GPIO9</text>
+        <path class="wire w33" d="M102 60 H200"/><path class="wire gnd" d="M102 85 H200"/><path class="wire sda" d="M102 110 H200"/><path class="wire scl" d="M102 135 H200"/>
+        <text x="151" y="55" text-anchor="middle" class="xs">VDD</text><text x="151" y="80" text-anchor="middle" class="xs">GND</text><text x="151" y="105" text-anchor="middle" class="xs">SDA</text><text x="151" y="130" text-anchor="middle" class="xs">SCL</text>
+        <rect class="bx" x="200" y="30" width="162" height="130" rx="8"/>
+        <text x="212" y="52" class="b">SEN66</text>
+        <text x="212" y="76" class="sm">G1 CO₂ (ppm)</text>
+        <text x="212" y="94" class="sm">G2 VOC Index</text>
+        <text x="212" y="112" class="sm">G3 PM2.5 (µg/m³)</text>
+        <text x="212" y="146" class="xs">I2C 0x6B · 100kHz</text>
+      </svg>
+      <ul class="wl" id="wl-sen"></ul>
+    </div>
+  </div>
+
+  <div class="panel-head" style="margin-top:6px">
+    <h3>사용 단자</h3>
+    <p class="muted" style="font-size:13px">행을 누르면 아래 "전체 단자 배열"에서 해당 단자가 강조됩니다.</p>
+  </div>
+  <div class="tbl"><table class="rt" id="pin-table"></table></div>
+
+  <details class="more" id="pinmap-details">
+    <summary>전체 단자 배열 보기 (44P 터미널 어댑터)</summary>
+    <div class="scroll"><svg id="pinmap-svg" viewBox="0 0 1000 800" role="img" aria-label="보드 A 전체 단자 배열"></svg></div>
+  </details>
+
+  <ul class="notes">
+    <li>GPIO35·36·37은 Octal PSRAM이 쓰므로 배선하지 않습니다. GPIO0·3·45·46은 부팅 스트래핑 핀, GPIO19·20은 USB D−/D+입니다.</li>
+    <li>3.3V 단자 하나에 IR 송신모듈 2개와 SEN66(내장 팬 포함)이 함께 물려 있습니다. 문서는 SEN66 전용 레귤레이터를 권장했으니 실측 전류를 확인할 항목으로 남깁니다.</li>
+    <li>SEN66 케이블 실제 선 색은 아직 받지 못해 도면 색으로만 구분했습니다.</li>
+  </ul>
+</section>
+
+<!-- 보드 B·C -->
+<section class="panel" id="board-bc" role="tabpanel" aria-labelledby="tab-board-bc" hidden>
+  <div class="panel-head">
+    <h2>보드 B·C</h2>
+    <p class="muted">지금까지 받은 정보만 그렸습니다. 점선은 미정입니다.</p>
+  </div>
+  <div class="cards">
+    <div class="card">
+      <div class="ch"><h3>보드 B · UVC</h3><span class="pill st-tbd">일부 미정</span></div>
+      <svg viewBox="0 0 370 270" role="img" aria-label="보드 B 배선">
+        <rect class="pcb" x="10" y="20" width="92" height="120" rx="8"/>
+        <text x="20" y="40" class="pk-t" style="font-size:12px">보드 B</text>
+        <text x="96" y="64" text-anchor="end" class="pk">GPIO5</text><text x="96" y="89" text-anchor="end" class="pk">VCC?</text><text x="96" y="114" text-anchor="end" class="pk">GND?</text>
+        <path class="wire usb" d="M56 140 V172"/><text x="62" y="164" class="xs">USB → 허브</text>
+        <rect class="bx" x="140" y="34" width="90" height="150" rx="6"/>
+        <text x="140" y="28" class="sm">2ch 릴레이 · 모델 미정</text>
+        <text x="148" y="64" class="xs">IN</text><text x="148" y="89" class="xs">VCC</text><text x="148" y="114" class="xs">GND</text>
+        <text x="224" y="74" text-anchor="end" class="xs">COM</text><text x="224" y="124" text-anchor="end" class="xs">NO</text><text x="224" y="170" text-anchor="end" class="xs">NC ✕</text>
+        <path class="wire sig" d="M102 60 H140"/><path class="wire w5 dash" d="M102 85 H140"/><path class="wire gnd dash" d="M102 110 H140"/>
+        <rect class="bx-src" x="272" y="24" width="84" height="56" rx="8"/>
+        <text x="282" y="46" class="b" style="font-size:12px">12V 외부</text><text x="282" y="64" class="xs">파워뱅크</text>
+        <path class="wire w12" d="M272 42 H250 V70 H230"/>
+        <text x="258" y="36" class="xs" style="fill:var(--w12)">+</text>
+        <rect class="bx" x="272" y="186" width="84" height="64" rx="8"/>
+        <text x="282" y="210" class="b" style="font-size:12px">UVC</text><text x="282" y="228" class="xs">살균기</text>
+        <path class="wire w12" d="M230 120 H258 V206 H272"/>
+        <path class="wire gnd" d="M356 236 H364 V62 H356"/>
+        <text x="20" y="214" class="sm">GPIO5 → 릴레이 → 12V +를</text>
+        <text x="20" y="230" class="sm">COM→NO로 UVC에 연결</text>
+      </svg>
+      <div class="callout"><b>안전 회로 확인 필요.</b> 문서 §3은 도어 스위치를 직렬로 넣은 안전 릴레이와 74HCT123 워치독으로 하드웨어 차단을 합니다. 현재는 릴레이 하나로 켜고 끄는 구조라, 인터록 적용 여부를 확인하고 아이콘엑스와 협의할 항목입니다.</div>
+      <ul class="wl" id="wl-b"></ul>
+    </div>
+
+    <div class="card">
+      <div class="ch"><h3>보드 C · LED 스트랩·후방센서</h3><span class="pill st-tbd">일부 미정</span></div>
+      <svg viewBox="0 0 370 290" role="img" aria-label="보드 C 배선">
+        <rect class="pcb" x="10" y="20" width="92" height="150" rx="8"/>
+        <text x="20" y="40" class="pk-t" style="font-size:12px">보드 C</text>
+        <text x="96" y="64" text-anchor="end" class="pk">GPIO18</text><text x="96" y="94" text-anchor="end" class="pk">GND</text><text x="96" y="154" text-anchor="end" class="pk">? 미정</text>
+        <path class="wire usb" d="M56 170 V200"/><text x="62" y="192" class="xs">USB → 허브</text>
+        <path class="wire sig" d="M102 60 H122"/>
+        <rect class="bx-tbd" x="122" y="44" width="70" height="32" rx="6"/>
+        <text x="157" y="64" text-anchor="middle" class="xs">레벨시프터?</text>
+        <path class="wire sig" d="M192 60 H220"/>
+        <rect class="bx" x="220" y="34" width="142" height="72" rx="8"/>
+        <text x="228" y="28" class="sm">LED 스트랩</text>
+        <text x="228" y="64" class="xs">DIN</text><text x="228" y="94" class="xs">GND</text>
+        <g id="led-dots"></g>
+        <path class="wire gnd dash" d="M102 90 H220"/>
+        <text x="160" y="104" text-anchor="middle" class="xs">공통 GND?</text>
+        <rect class="bx-tbd" x="220" y="146" width="142" height="54" rx="8"/>
+        <text x="230" y="168" class="b" style="font-size:11.5px">LED 5V 전원</text><text x="230" y="186" class="xs">SMPS 또는 USB-C</text>
+        <path class="wire w5 dash" d="M262 146 V106"/><path class="wire gnd dash" d="M322 146 V106"/>
+        <text x="268" y="130" class="xs">+5V</text><text x="328" y="130" class="xs">GND</text>
+        <path class="wire tbdw dash" d="M102 150 H112 V246 H130"/>
+        <rect class="bx-tbd" x="130" y="220" width="160" height="54" rx="8"/>
+        <text x="142" y="243" class="b" style="font-size:12px">후방센서</text><text x="142" y="261" class="xs">모델·인터페이스 미정</text>
+      </svg>
+      <ul class="wl" id="wl-c"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- 변경점·미정 -->
+<section class="panel" id="changes" role="tabpanel" aria-labelledby="tab-changes" hidden>
+  <div class="panel-head">
+    <h2>문서 대비 변경점</h2>
+    <p class="muted">회로도·배선도 v1.1과 현재 구성의 차이입니다. 작업지시서와 문서 개정에 그대로 옮길 수 있게 정리했습니다.</p>
+  </div>
+  <div class="tbl"><table class="rt" id="chg-table"></table></div>
+  <div class="panel-head" style="margin-top:8px">
+    <h2>미정 항목</h2>
+  </div>
+  <div class="tbl"><table class="rt" id="open-table"></table></div>
+</section>
+
+<footer>
+  <span>근거: PCS_Indoor_Controller (BoardConfig.h, Sen66Config.h, README.md), 회로도·배선도 v1.1, 시스템 구성도 v1.1, 시리얼 프로토콜 v1.0, BOM v1.0, 실물 배선 확인 내용과 사진.</span>
+  <span>차량 형상: 토레스 EVX 공개 제원 비율의 단순 블록. 실차 확인 후 위치와 길이를 갱신합니다.</span>
+</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  function el(tag,attrs,text){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;return e;}
+  var PILL={ok:'<span class="pill st-ok">확정</span>',tbd:'<span class="pill st-tbd">미정</span>',doc:'<span class="pill st-doc">문서 기준</span>',rsv:'<span class="pill st-rsv">예약</span>'};
+
+  /* ---------- 전체 개요도 ---------- */
+  var nodes={
+    ocu:{t:'OCU',s:'차량 · 문서 기준',k:'doc',z:'system'},
+    hub:{t:'미니 PC · USB 허브',s:'허브 SW · 문서 기준',k:'doc',z:'system'},
+    pb:{t:'파워뱅크',s:'트렁크 · 모든 기기 전원',k:'src',z:'system'},
+    bA:{t:'보드 A',s:'PCS-IN-01',k:'pcb',z:'board-a'},
+    air:{t:'공기청정기',s:'GPIO5 · IR',k:'dev',z:'board-a',v:['12V','w12']},
+    dif:{t:'디퓨저',s:'GPIO7 · IR',k:'dev',z:'board-a',v:['5V','w5']},
+    pdlc:{t:'PDLC 제어기',s:'GPIO4 · 릴레이',k:'dev',z:'board-a',v:['12V','w12']},
+    sen:{t:'SEN66 가스센서',s:'GPIO8·9 · I2C',k:'dev',z:'board-a',v:['3.3V','w33']},
+    bB:{t:'보드 B',s:'UVC · ID 미정',k:'pcb',z:'board-bc'},
+    uvc:{t:'UVC 살균기',s:'GPIO5 · 릴레이',k:'dev',z:'board-bc',v:['12V','w12']},
+    bC:{t:'보드 C',s:'LED·후방 · ID 미정',k:'pcb',z:'board-bc'},
+    led:{t:'LED 스트랩',s:'GPIO18 · 데이터',k:'dev',z:'board-bc',v:['5V?','w5',1]},
+    rear:{t:'후방센서',s:'인터페이스 미정',k:'tbd',z:'board-bc'}
+  };
+  var layouts={
+    'ov-wide':{
+      zones:{system:[10,10,172,396,'전원·통신'],'board-a':[250,10,600,214,'보드 A'],'board-bc':[250,234,600,172,'보드 B·C']},
+      pos:{ocu:[20,40,150,50],hub:[20,150,150,60],pb:[20,300,150,80],
+        bA:[262,44,158,170],air:[520,44,230,38],dif:[520,88,230,38],pdlc:[520,132,230,38],sen:[520,176,230,38],
+        bB:[262,256,158,38],uvc:[520,256,230,38],bC:[262,314,158,82],led:[520,314,230,38],rear:[520,358,230,38]},
+      chipX:762,chipW:60,
+      edges:[['usb','M95 90 V150'],['usb','M170 180 H215'],['usb','M215 129 V355'],['usb','M215 129 H262'],['usb','M215 275 H262'],['usb','M215 355 H262'],
+        ['sig','M420 63 H520'],['sig','M420 107 H520'],['sig','M420 151 H520'],['sda','M420 195 H520'],['sig','M420 275 H520'],['sig','M420 333 H520'],['tbdw dash','M420 377 H520']],
+      dots:[[215,180]]
+    },
+    'ov-tall':{
+      zones:{system:[4,8,372,156,'전원·통신'],'board-a':[4,176,372,238,'보드 A'],'board-bc':[4,424,372,200,'보드 B·C']},
+      pos:{pb:[16,34,348,44],ocu:[16,94,150,50],hub:[214,94,150,50],
+        bA:[18,206,108,198],air:[176,206,146,40],dif:[176,256,146,40],pdlc:[176,306,146,40],sen:[176,356,146,40],
+        bB:[18,454,108,40],uvc:[176,454,146,40],bC:[18,510,108,104],led:[176,510,146,40],rear:[176,564,146,40]},
+      chipX:327,chipW:44,
+      edges:[['usb','M166 119 H214'],['usb','M289 144 V166 H10 V562'],['usb','M10 305 H18'],['usb','M10 474 H18'],['usb','M10 562 H18'],
+        ['sig','M126 226 H176'],['sig','M126 276 H176'],['sig','M126 326 H176'],['sda','M126 376 H176'],['sig','M126 474 H176'],['sig','M126 530 H176'],['tbdw dash','M126 584 H176']],
+      dots:[]
+    }
+  };
+  var zoneEls=[];
+  Object.keys(layouts).forEach(function(id){
+    var L=layouts[id], svg=document.getElementById(id), gz={};
+    Object.keys(L.zones).forEach(function(z){
+      var r=L.zones[z], g=el('g',{'class':'zone',tabindex:0,role:'button','data-zone':z,'aria-label':r[4]+' 상세 보기'});
+      g.appendChild(el('rect',{'class':'zr',x:r[0],y:r[1],width:r[2],height:r[3],rx:10}));
+      g.appendChild(el('text',{'class':'zl',x:r[0]+12,y:r[1]+18},r[4]+' ›'));
+      svg.appendChild(g); gz[z]=g; zoneEls.push(g);
+    });
+    L.edges.forEach(function(e){svg.appendChild(el('path',{'class':'wire '+e[0],d:e[1]}));});
+    L.dots.forEach(function(d){svg.appendChild(el('circle',{'class':'dot',cx:d[0],cy:d[1],r:3.5}));});
+    Object.keys(L.pos).forEach(function(k){
+      var n=nodes[k], p=L.pos[k], g=gz[n.z];
+      var cls={doc:'bx-doc',src:'bx-src',pcb:'pcb',dev:'bx',tbd:'bx-tbd'}[n.k];
+      g.appendChild(el('rect',{'class':cls,x:p[0],y:p[1],width:p[2],height:p[3],rx:7}));
+      var tall=p[3]>50, isPcb=n.k==='pcb';
+      var ty=tall?p[1]+24:p[1]+p[3]/2-2, sy=tall?p[1]+41:p[1]+p[3]/2+12;
+      g.appendChild(el('text',{x:p[0]+10,y:ty,'class':isPcb?'pk-t':'b','style':'font-size:12px'},n.t));
+      g.appendChild(el('text',{x:p[0]+10,y:sy,'class':isPcb?'pk-d':'sm'},n.s));
+      if(n.v){
+        var cy=p[1]+p[3]/2;
+        g.appendChild(el('rect',{'class':'chip',x:L.chipX,y:cy-10,width:L.chipW,height:20,rx:5,style:'stroke:var(--'+n.v[1]+')'+(n.v[2]?';stroke-dasharray:4 3':'')}));
+        g.appendChild(el('text',{x:L.chipX+L.chipW/2,y:cy+4,'text-anchor':'middle','class':'mono b','style':'font-size:10.5px'},n.v[0]));
+      }
+    });
+  });
+
+  /* ---------- 탭 ---------- */
+  var TABS=['vehicle','system','board-a','board-bc','changes'];
+  function select(id,scroll){
+    if(TABS.indexOf(id)<0) id='board-a';
+    TABS.forEach(function(t){
+      document.getElementById(t).hidden=(t!==id);
+      document.getElementById('tab-'+t).setAttribute('aria-selected',t===id?'true':'false');
+    });
+    if(id==='vehicle') init3d();
+    zoneEls.forEach(function(g){g.classList.toggle('on',g.getAttribute('data-zone')===id);});
+    try{history.replaceState(null,'','#'+id);}catch(e){}
+    if(scroll) document.querySelector('.tabs').scrollIntoView({block:'start'});
+  }
+  TABS.forEach(function(t){document.getElementById('tab-'+t).addEventListener('click',function(){select(t,false);});});
+  document.querySelector('.tabs').addEventListener('keydown',function(e){
+    if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
+    var cur=TABS.indexOf(document.querySelector('.tabs [aria-selected="true"]').id.slice(4));
+    var nx=TABS[(cur+(e.key==='ArrowRight'?1:TABS.length-1))%TABS.length];
+    select(nx,false); document.getElementById('tab-'+nx).focus();
+  });
+  zoneEls.forEach(function(g){
+    var go=function(){select(g.getAttribute('data-zone'),true);};
+    g.addEventListener('click',go);
+    g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});
+  });
+
+  /* ---------- 전원 목록 ---------- */
+  var power=[
+    ['12V','w12','12V 외부전원','공기청정기 (ipuri)','릴레이 없이 직결','ok'],
+    ['5V','w5','5V 외부전원','디퓨저','커넥터 형태 미정','ok'],
+    ['12V','w12','12V 외부전원','PDLC 제어기','T/C만 보드 A 릴레이','ok'],
+    ['12V','w12','12V 외부전원','UVC 살균기','보드 B 릴레이 COM→NO 경유','ok'],
+    ['5V','w5','LED 5V 전원','LED 스트랩','SMPS 또는 USB-C','tbd',1],
+    ['19V','w19','19V 어댑터','미니 PC','허브 SW · MQTT','doc'],
+    ['?','tbd','전원 미정','빔프로젝터','연결 방식·위치 미정','tbd',1],
+    ['5V','w5','5V 어댑터','유전원 USB 허브','보드 A·B·C에 USB 5V','doc']
+  ];
+  document.getElementById('power-list').innerHTML=power.map(function(r){
+    return '<div class="prow"><div class="src"><span class="vchip'+(r[6]?' dash':'')+'" style="border-color:var(--'+r[1]+')">'+r[0]+'</span><span>'+r[2]+'</span></div>'+
+      '<span class="arrow">→</span><div class="load"><b>'+r[3]+'</b><small>'+r[4]+'</small></div>'+PILL[r[5]]+'</div>';
+  }).join('');
+
+  /* ---------- 배선 목록 ---------- */
+  function wl(id,rows){
+    document.getElementById(id).innerHTML=rows.map(function(r){
+      return '<li><span class="wid">'+r[0]+'</span><span class="wd"><span class="sw'+(r[4]?' dash':'')+'" style="border-color:var(--'+r[3]+')"></span>'+r[1]+(r[2]?'<small>'+r[2]+'</small>':'')+'</span>'+PILL[r[5]]+'</li>';
+    }).join('');
+  }
+  wl('wl-ir',[
+    ['A-01','GPIO5 → IR #1 DAT','NEC 38kHz · 주소 FD04','sig',0,'ok'],
+    ['A-02','3.3V → IR #1 VCC','','w33',0,'ok'],
+    ['A-03','GND → IR #1 GND','','gnd',0,'ok'],
+    ['A-04','GPIO7 → IR #2 DAT','NEC 38kHz · 주소 00','sig',0,'ok'],
+    ['A-05','3.3V → IR #2 VCC','','w33',0,'ok'],
+    ['A-06','GND → IR #2 GND','','gnd',0,'ok'],
+    ['L-01','IR #1 → 공기청정기 수신부','근접 부착','ir',1,'ok'],
+    ['L-02','IR #2 → 디퓨저 수신부','근접 부착','ir',1,'ok'],
+    ['P-01','파워뱅크 → 공기청정기','12V 외부전원','w12',0,'ok'],
+    ['P-02','파워뱅크 → 디퓨저','5V 외부전원 · 커넥터 미정','w5',0,'ok']
+  ]);
+  wl('wl-pdlc',[
+    ['A-07','GPIO4 → 릴레이 IN1','LOW = 접점 닫힘','sig',0,'ok'],
+    ['A-08','3.3V 또는 5V → 릴레이 VCC','어느 쪽인지 미정','w5',1,'tbd'],
+    ['A-09','GND → 릴레이 GND','','gnd',0,'ok'],
+    ['A-10','COM·NO ↔ T/C 흰선·검정선','접점이 두 선을 단락','white-wire',0,'ok'],
+    ['P-03','파워뱅크 → PDLC 제어기','12V 상시','w12',0,'ok']
+  ]);
+  wl('wl-sen',[
+    ['A-11','3.3V → SEN66 VDD','보드 3.3V 직접','w33',0,'ok'],
+    ['A-12','GND → SEN66 GND','','gnd',0,'ok'],
+    ['A-13','GPIO8 → SDA','I2C 100kHz','sda',0,'ok'],
+    ['A-14','GPIO9 → SCL','','scl',0,'ok']
+  ]);
+  wl('wl-b',[
+    ['B-01','GPIO5 → 릴레이 IN','동작 레벨 미정','sig',0,'ok'],
+    ['B-02','12V + → COM → NO → UVC +','','w12',0,'ok'],
+    ['B-03','UVC − → 12V −','','gnd',0,'ok'],
+    ['B-04','릴레이 VCC·GND','연결 위치 미정','w5',1,'tbd']
+  ]);
+  wl('wl-c',[
+    ['C-01','GPIO18 → LED DIN','레벨시프터 사용 여부 미정','sig',0,'ok'],
+    ['C-02','보드 GND ↔ LED GND','외부 5V 사용 시 공통 연결 필요','gnd',1,'tbd'],
+    ['C-03','5V 전원 → LED','SMPS 또는 파워뱅크 USB-C','w5',1,'tbd'],
+    ['C-04','보드 C ↔ 후방센서','모델·인터페이스·핀 미정','tbd',1,'tbd']
+  ]);
+
+  /* ---------- 표 ---------- */
+  function table(id,cols,rows,attrs){
+    var h='<thead><tr>'+cols.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr></thead><tbody>';
+    rows.forEach(function(r,i){
+      h+='<tr'+(attrs?attrs(r,i):'')+'>'+r.slice(0,cols.length).map(function(v,j){
+        var mono=(typeof v==='string'&&v.charAt(0)==='§');
+        return '<td data-label="'+cols[j]+'"'+(mono?' class="m"':'')+'>'+(mono?v.slice(1):v)+'</td>';
+      }).join('')+'</tr>';
+    });
+    document.getElementById(id).innerHTML=h+'</tbody>';
+  }
+  var pins=[
+    ['§3.3','3.3V 전원','IR 송신모듈 #1·#2 VCC, SEN66 VDD',PILL.ok,'§실물 확인','L0'],
+    ['§GPIO4','PDLC 릴레이 · LOW=ON','2ch 릴레이 IN1',PILL.ok,'§BoardConfig.h:12','L3'],
+    ['§GPIO5','공기청정기 IR','IR 송신모듈 #1 DAT',PILL.ok,'§BoardConfig.h:10','L4'],
+    ['§GPIO6','예약 (초기화 안 함)','—',PILL.rsv,'§BoardConfig.h:14','L5'],
+    ['§GPIO7','디퓨저 IR','IR 송신모듈 #2 DAT',PILL.ok,'§BoardConfig.h:11','L6'],
+    ['§GPIO8','SEN66 SDA · 100kHz','SEN66 SDA',PILL.ok,'§Sen66Config.h:6','L11'],
+    ['§GPIO9','SEN66 SCL','SEN66 SCL',PILL.ok,'§Sen66Config.h:6','L14'],
+    ['§5V','릴레이 VCC 후보','3.3V와 5V 중 미정',PILL.tbd,'§—','L20'],
+    ['§GND','공통 GND','IR·SEN66·릴레이 GND',PILL.ok,'§실물 확인','L21'],
+    ['§USB-C','미니 PC 통신·전원','유전원 USB 허브 (두 포트 중 미정)',PILL.tbd,'§README.md','USB']
+  ];
+  table('pin-table',['단자','기능','연결 대상','상태','근거'],pins,function(r){return ' data-term="'+r[5]+'" tabindex="0"';});
+
+  table('chg-table',['항목','문서 v1.1','현재','영향·조치'],[
+    ['MCU','ESP32-DevKitC-32E ×3','ESP32-S3-N16R8 ×3 (보드 A는 44P 터미널 어댑터)','BOM 15번 변경, 핀 전체 재배정'],
+    ['보드 구성','실내(LED 포함) / 후측방 / UVC','A: 청정기·디퓨저·PDLC·가스 / B: UVC / C: LED·후방','hello devs 목록과 descriptor driver.board 수정'],
+    ['공기청정기 전원','12V → 릴레이 1(GPIO25)','릴레이 삭제, 12V 직결 + IR 토글(0x45)','물리적 OFF 보장 안 됨. 사양서 §4 개정'],
+    ['IR 송신','GPIO27·33 → 2N2222 → IR LED','GPIO5·7 → IR 송신모듈(3.3V)','BOM 20번 변경'],
+    ['디퓨저 전원','내장 배터리 + USB 충전','5V 외부전원 (파워뱅크)','배터리 운용 문구 정리'],
+    ['PDLC','릴레이 2(GPIO26)로 제어기 전원 개폐','GPIO4 → 릴레이 CH1이 T/C 단락, 제어기 12V 상시','W11 정의 변경'],
+    ['릴레이 모듈','4채널 SZH-RLBG-012','2채널 ×2 (PDLC용·UVC용, 각 1채널 예비), 모델 미정','BOM 19번 변경'],
+    ['SEN66','GPIO21/22, AMS1117 전용 3.3V','GPIO8/9, 보드 3.3V 직접','3.3V 전류 실측, BOM 22번 결정'],
+    ['LED 스트랩','실내 보드 GPIO18 + 레벨시프터 + 5V SMPS','보드 C GPIO18, 전원·레벨시프터 미정','정보 받은 뒤 반영'],
+    ['후측방 센서','A121 레이더, UART2 GPIO16/17','미정','정보 받은 뒤 반영'],
+    ['UVC','48V + 안전 릴레이(도어) + MOSFET + 워치독','12V, 릴레이 COM→NO, GPIO5','인터록 적용 여부 확인·협의'],
+    ['파워스테이션','Anker SOLIX C1000 Gen 2','EcoFlow (모델 미정)','BOM 27번, 용량 재계산']
+  ]);
+  table('open-table',['항목','반영 위치'],[
+    ['파워뱅크 모델과 포트별 연결','전원·통신'],
+    ['보드 A 릴레이 VCC(3.3V/5V)와 릴레이 모델','A-08'],
+    ['보드 A가 허브에 연결하는 USB-C 포트','사용 단자'],
+    ['SEN66 케이블 실제 선 색','A-11 ~ A-14'],
+    ['디퓨저 5V 커넥터 형태','P-02'],
+    ['보드 B 릴레이 모델·VCC·동작 레벨, 보드 ID','보드 B'],
+    ['보드 C LED 전원 방식·레벨시프터·GND, 보드 ID','보드 C'],
+    ['후방센서 모델·인터페이스·핀','보드 C'],
+    ['UVC 도어 인터록·워치독 적용 여부 (아이콘엑스 협의)','보드 B, 변경점'],
+    ['SEN66 2열 설치 위치','차량 배치 #8, V-05'],
+    ['빔프로젝터 연결 방식·설치 위치','차량 배치 #12'],
+    ['후방센서 장착 위치','차량 배치 #11, V-10'],
+    ['OCU 위치 (미니 PC USB-LAN 연결)','차량 배치 V-11'],
+    ['실차 기준 정확한 위치와 배선 길이','차량 배치 전체']
+  ]);
+
+  /* ---------- LED 점 ---------- */
+  var dots=document.getElementById('led-dots');
+  for(var x=262;x<=346;x+=14){dots.appendChild(el('rect',{'class':'screw',x:x,y:66,width:8,height:8,rx:2}));}
+
+  /* ---------- 전체 단자 배열 ---------- */
+  var LN=['3.3','3.3','RST','4','5','6','7','15','16','17','18','8','3','46','9','10','11','12','13','14','5V','GND'];
+  var RN=['G','TX','RX','1','2','42','41','40','39','38','37','36','35','0','45','48','47','21','20','19','GND','GND'];
+  var LA={0:['IR×2 VCC · SEN66 VDD','w33'],3:['PDLC 릴레이 IN1','sig'],4:['공기청정기 IR DAT','sig'],5:['예약 · 미사용','rsv'],6:['디퓨저 IR DAT','sig'],
+    11:['SEN66 SDA','sda'],12:['스트래핑','c'],13:['스트래핑','c'],14:['SEN66 SCL','scl'],20:['릴레이 VCC? (미정)','w5',1],21:['공통 GND','gnd']};
+  var RA={1:['UART0 TX','c'],2:['UART0 RX','c'],10:['PSRAM · 사용 금지','c'],11:['PSRAM · 사용 금지','c'],12:['PSRAM · 사용 금지','c'],
+    13:['BOOT 스트래핑','c'],14:['스트래핑','c'],18:['USB D+','c'],19:['USB D−','c']};
+  var COL={w33:'var(--w33)',sig:'var(--sig)',sda:'var(--sda)',scl:'var(--scl)',w5:'var(--w5)',gnd:'var(--gnd)',rsv:'var(--rsv)',c:'var(--line-strong)'};
+  var s=document.getElementById('pinmap-svg');
+  s.appendChild(el('rect',{'class':'pcb',x:310,y:10,width:380,height:780,rx:16}));
+  [[388,26],[612,26],[388,774],[612,774]].forEach(function(p){s.appendChild(el('circle',{'class':'bgfill',cx:p[0],cy:p[1],r:8}));});
+  s.appendChild(el('rect',{'class':'pcb2',x:395,y:46,width:210,height:668,rx:6}));
+  s.appendChild(el('rect',{'class':'screw',x:432,y:62,width:136,height:140,rx:4}));
+  s.appendChild(el('text',{x:500,y:120,'text-anchor':'middle','class':'b mono','style':'fill:var(--pcb-2);font-size:17px'},'S3-N16R8'));
+  s.appendChild(el('text',{x:500,y:142,'text-anchor':'middle','class':'mono','style':'fill:var(--pcb-2);font-size:11px'},'ESP32-S3 · WiFi+BT'));
+  s.appendChild(el('text',{x:500,y:690,'text-anchor':'middle','class':'pk-d'},'TERMINAL ADAPTER · ESP32-S3 44P'));
+  s.appendChild(el('rect',{'class':'screw',x:425,y:722,width:60,height:40,rx:9}));
+  s.appendChild(el('rect',{'class':'screw',x:515,y:722,width:60,height:40,rx:9}));
+  s.appendChild(el('text',{x:455,y:781,'text-anchor':'middle','class':'pk-d'},'USB-C ①'));
+  s.appendChild(el('text',{x:545,y:781,'text-anchor':'middle','class':'pk-d'},'USB-C ② · 연결 중?'));
+  var usbG=el('g',{'class':'term-g','data-term':'USB'});
+  usbG.appendChild(el('rect',{'class':'ring',x:420,y:717,width:160,height:50,rx:12,style:'stroke:var(--usb)'}));
+  s.appendChild(usbG);
+  s.appendChild(el('rect',{'class':'term',x:325,y:30,width:40,height:742,rx:4}));
+  s.appendChild(el('rect',{'class':'term',x:635,y:30,width:40,height:742,rx:4}));
+  function side(list,ann,cx,left,prefix){
+    list.forEach(function(name,i){
+      var cy=51+i*33.4, a=ann[i], grp=el('g',{'class':'term-g','data-term':prefix+i});
+      s.appendChild(el('circle',{cx:left?410:590,cy:cy,r:3,'class':'screw',opacity:.5}));
+      grp.appendChild(el('circle',{'class':'screw',cx:cx,cy:cy,r:11}));
+      grp.appendChild(el('path',{d:'M'+(cx-6)+' '+(cy+6)+' L'+(cx+6)+' '+(cy-6),stroke:'var(--pcb-2)','stroke-width':2.4}));
+      grp.appendChild(el('text',{x:left?300:700,y:cy+4,'text-anchor':left?'end':'start','class':'mono b','style':'font-size:13px'},name));
+      if(a){
+        var c=COL[a[1]], used=a[1]!=='c';
+        if(used) grp.appendChild(el('circle',{'class':'ring',cx:cx,cy:cy,r:15,style:'stroke:'+c+(a[2]?';stroke-dasharray:4 3':'')}));
+        grp.appendChild(el('line',{'class':'bar',x1:left?238:732,x2:left?268:762,y1:cy,y2:cy,style:'stroke:'+c+(a[2]?';stroke-dasharray:4 4':'')}));
+        grp.appendChild(el('text',{'class':'ann'+(used?'':' sm'),x:left?230:770,y:cy+4,'text-anchor':left?'end':'start','style':'font-size:'+(used?'13px':'12px')},a[0]));
+      }
+      s.appendChild(grp);
+    });
+  }
+  side(LN,LA,345,true,'L');
+  side(RN,RA,655,false,'R');
+
+  function setHl(key,on){var t=s.querySelector('[data-term="'+key+'"]'); if(t) t.classList.toggle('hl',on);}
+  var pinned=null, det=document.getElementById('pinmap-details');
+  document.querySelectorAll('#pin-table tr[data-term]').forEach(function(tr){
+    var k=tr.getAttribute('data-term');
+    tr.addEventListener('mouseenter',function(){setHl(k,true);});
+    tr.addEventListener('mouseleave',function(){if(pinned!==tr)setHl(k,false);});
+    tr.addEventListener('click',function(){
+      if(pinned){pinned.classList.remove('hl');setHl(pinned.getAttribute('data-term'),false);}
+      if(pinned===tr){pinned=null;return;}
+      pinned=tr;tr.classList.add('hl');setHl(k,true);
+      det.open=true; det.scrollIntoView({block:'nearest'});
+    });
+    tr.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();tr.click();}});
+  });
+
+  /* ---------- 차량 배치 ----------
+     좌표(mm): x = 앞 범퍼 0 → 뒤 4715, y = 지면 0 → 위, z = 차량 좌측(운전석) + / 우측(조수석) − */
+  var VEH={L:4715,W:1890};
+  var SECS=[['1열',1150,2350,380],['2열',2350,3350,380],['트렁크',3350,4600,640]];
+  var PARTS=[
+    {id:'enc',n:1,t:'통합 함체',s:'보드 A·B·C · 2ch 릴레이 ×2 · USB 허브',sec:'트렁크',where:'트렁크 (함체 제작 요청)',st:'ok',b:[3500,3800,640,820,260,640],c:'line-strong'},
+    {id:'pb',n:2,t:'파워뱅크',s:'EcoFlow · 모든 기기 전원',sec:'트렁크',where:'트렁크',st:'ok',b:[3950,4380,640,940,-560,-80],c:'ac'},
+    {id:'pc',n:3,t:'미니 PC',s:'MQTT 브로커 · 보드 3개 USB 제어',sec:'트렁크',where:'트렁크',st:'ok',b:[3900,4150,640,700,380,620],c:'doc'},
+    {id:'pdc',n:4,t:'PDLC 제어기',s:'12V 상시 · T/C는 함체 릴레이',sec:'트렁크',where:'트렁크',st:'ok',b:[3500,3650,640,700,-640,-400],c:'white-wire'},
+    {id:'air',n:5,t:'공기청정기',s:'IR 제어 · 12V',sec:'1열',where:'좌석 사이 암레스트 위',st:'ok',b:[1990,2230,760,1050,-115,115],c:'accent'},
+    {id:'dif',n:6,t:'디퓨저',s:'IR 제어 · 5V',sec:'1열',where:'컵홀더 (좌우 미정)',st:'ok',cyl:[1650,-55,40,690,880],c:'accent'},
+    {id:'uvc',n:7,t:'UVC 모듈',s:'보드 B 릴레이 · 12V',sec:'1열',where:'조수석 시트 하단, 2열 쪽을 향함',st:'ok',b:[2250,2390,380,450,-560,-220],c:'w12'},
+    {id:'sen',n:8,t:'SEN66 가스센서',s:'I2C · 보드 A',sec:'2열',where:'2열 위치 미정 (그림은 콘솔 후면 가정)',st:'tbd',b:[2252,2300,520,600,-45,45],c:'sda'},
+    {id:'film',n:9,t:'PDLC 필름',s:'필름 시공',sec:'2열',where:'우측 뒷창',st:'ok',plane:[2580,3250,1080,1480,-905],c:'doc',m:[2700,-1070]},
+    {id:'led',n:10,t:'LED 스트랩',s:'GPIO18 · 5V 전원 미정',sec:'2열',where:'우측 뒷창 주변 (부착 형태 협의)',st:'ok',frame:[2580,3250,1080,1480,-893],c:'rsv',m:[3130,-1070]},
+    {id:'rear',n:11,t:'후방센서',s:'모델·인터페이스 미정',sec:'외장',where:'차량 후방 우측 (추정)',st:'tbd',b:[4690,4730,480,540,-650,-450],c:'tbd',m:[4810,-550]},
+    {id:'proj',n:12,t:'빔프로젝터',s:'연결 방식 미정',sec:'미정',where:'설치 위치·연결 방식 미정',st:'tbd'}
+  ];
+  var PBY={}; PARTS.forEach(function(p){PBY[p.id]=p;});
+  // 공용 경로: c = 트렁크 → 2열 바닥 중앙 → 1열 콘솔 뒤, r = 트렁크 → 우측 사이드실 → B필러 하단
+  var SP={c:[[3360,660,0],[3360,390,0],[2420,390,0]],r:[[3360,660,-700],[3360,400,-820],[2560,400,-830]]};
+  function sp(k,o){return SP[k].map(function(p){return [p[0],p[1],p[2]+o];});}
+  var ROUTES=[
+    {id:'V-01',f:'enc',to:'air',t:'함체 (보드 A) → 공기청정기 IR 송신모듈',w:'IR #1 DAT·3.3V·GND',c:'sig',st:'ok',
+      p:[[3500,680,330]].concat(sp('c',40),[[2300,390,40],[2250,720,40],[2120,800,60]]),note:'3.3V 전원도 함께 길어짐. 차폐선 권장, 설치 후 IR 동작 확인'},
+    {id:'V-02',f:'enc',to:'dif',t:'함체 (보드 A) → 디퓨저 IR 송신모듈',w:'IR #2 DAT·3.3V·GND',c:'sig',st:'ok',
+      p:[[3500,680,350]].concat(sp('c',60),[[1700,400,60],[1660,700,-15]]),note:'V-01과 같음'},
+    {id:'V-03',f:'pb',to:'air',t:'파워뱅크 → 공기청정기',w:'12V DC 전원',c:'w12',st:'ok',
+      p:[[3950,680,-200],[3700,660,-40]].concat(sp('c',-40),[[2300,390,-40],[2250,720,-40],[2150,760,-60]]),note:'어댑터는 트렁크에 두고 DC선 연장 (추정). 전류에 맞는 굵기'},
+    {id:'V-04',f:'pb',to:'dif',t:'파워뱅크 → 디퓨저',w:'5V 전원 · 커넥터 미정',c:'w5',st:'ok',
+      p:[[3950,680,-220],[3700,660,-60]].concat(sp('c',-60),[[1700,400,-60],[1650,690,-55]]),note:'5V는 전압 강하에 약함. 굵은 선 사용'},
+    {id:'V-05',f:'enc',to:'sen',t:'함체 (보드 A) → SEN66',w:'I2C 4선 VDD·GND·SDA·SCL',c:'sda',st:'ok',
+      p:[[3500,680,300]].concat(sp('c',20),[[2300,390,20],[2300,560,0]]),note:'I2C는 짧은 배선용. 꼬임선·차폐선 사용, 실차 통신 확인. 안 되면 속도를 낮추거나 연장 IC 검토'},
+    {id:'V-06',f:'enc',to:'uvc',t:'함체 (릴레이 2) → UVC 모듈',w:'12V +·− 2선',c:'w12',st:'ok',
+      p:[[3500,680,320],[3360,660,150],[3360,390,-150],[2700,390,-380],[2390,410,-390]],note:'전류에 맞는 굵기. 시트 레일 이동에 걸리지 않게'},
+    {id:'V-07',f:'pdc',to:'film',t:'PDLC 제어기 → PDLC 필름',w:'필름 구동선',c:'white-wire',st:'ok',
+      p:[[3500,670,-520]].concat(sp('r',0),[[2560,900,-860],[2590,1080,-900]]),note:'제어기 출력 사양 확인 후 절연·굵기 결정. 도어 인입은 작업자 판단'},
+    {id:'V-08',f:'enc',to:'led',t:'함체 (보드 C) → LED 스트랩',w:'데이터·GND',c:'sig',st:'ok',
+      p:[[3500,680,280],[3420,660,-300],[3380,660,-680]].concat(sp('r',20),[[2560,880,-850],[2590,1100,-890]]),note:'데이터선과 GND를 함께 배선. 레벨시프터 사용 여부 확인'},
+    {id:'V-09',f:'pb',to:'led',t:'파워뱅크 → LED 스트랩',w:'5V 전원 · 방식 미정',c:'w5',st:'tbd',
+      p:[[3950,680,-520],[3600,660,-690]].concat(sp('r',40),[[2560,860,-840],[2590,1120,-888]]),note:'SMPS 또는 USB-C 결정 후 확정'},
+    {id:'V-10',f:'enc',to:'rear',t:'함체 (보드 C) → 후방센서',w:'미정',c:'tbd',st:'tbd',
+      p:[[3800,700,350],[4450,660,0],[4600,640,-450],[4690,520,-550]],note:'센서 모델·인터페이스 확정 후'},
+    {id:'V-11',f:'pc',to:null,t:'OCU → 미니 PC',w:'USB-LAN 어댑터',c:'usb',st:'tbd',note:'차량 OCU 위치 확인 후'},
+    {id:'V-12',f:'pb',to:'enc',t:'트렁크 내부',w:'파워뱅크 → 미니 PC·USB 허브·PDLC 제어기 전원, 미니 PC → USB 허브',c:'usb',st:'ok',inTrunk:1,note:'장비 배치 후 짧게 정리'}
+  ];
+  var RBY={}; ROUTES.forEach(function(r){RBY[r.id]=r;});
+  function rlen(r){
+    if(!r.p) return null;
+    var L=0; for(var i=1;i<r.p.length;i++){var a=r.p[i-1],b=r.p[i];L+=Math.sqrt(Math.pow(a[0]-b[0],2)+Math.pow(a[1]-b[1],2)+Math.pow(a[2]-b[2],2));}
+    return Math.max(.5,Math.ceil(L*1.2/500)/2);
+  }
+  function related(key){
+    var rel={}; rel[key]=1;
+    var id=key.slice(2);
+    if(key.charAt(0)==='c'){ROUTES.forEach(function(r){if(r.f===id||r.to===id)rel['r:'+r.id]=1;});}
+    else {var r=RBY[id]; if(r.f)rel['c:'+r.f]=1; if(r.to)rel['c:'+r.to]=1;}
+    return rel;
+  }
+  var selKey=null, selRel=null, selHooks=[];
+  function selectV(key){
+    selKey=(key&&selKey!==key)?key:null; selRel=selKey?related(selKey):null;
+    selHooks.forEach(function(f){f(selKey,selRel);});
+  }
+  selHooks.push(function(k,rel){
+    document.querySelectorAll('#vehicle [data-key]').forEach(function(e){
+      var on=!!rel&&!!rel[e.getAttribute('data-key')];
+      if(e instanceof SVGElement){e.classList.toggle('on',on);e.classList.toggle('dim',!!rel&&!on);}
+      else e.classList.toggle('hl',on);
+    });
+    var info=document.getElementById('v-info');
+    if(!k){info.textContent='부품을 누르면 연결 구성 그림이 나옵니다.';return;}
+    if(k.charAt(0)==='c'){var p=PBY[k.slice(2)];info.innerHTML='<b>'+p.n+'. '+p.t+'</b> · '+p.where;}
+    else {var r=RBY[k.slice(2)],L=rlen(r);info.innerHTML='<b>'+r.id+'</b> '+r.t+(L?' · 약 '+L.toFixed(1)+'m':'');}
+  });
+
+  /* 상세 카드: 부품별 연결 구성
+     행 = [방향 in/out, 선 라벨, 색, 상대 부품 id 또는 {t,s}, 배선 ID, 부연 설명] */
+  var CONN={
+    pb:{say:'모든 기기의 전원입니다. 포트 배정은 미정입니다.',rows:[
+      ['out','12V','w12','air','V-03'],['out','5V','w5','dif','V-04'],['out','12V','w12','pdc','','트렁크 · 12V 상시'],
+      ['out','12V','w12','enc','','함체 릴레이 2 거쳐 UVC로'],['out','5V?','w5','led','V-09','SMPS 또는 USB-C 미정'],['out','DC','w19','pc','','트렁크']]},
+    pdc:{say:'제어기는 12V 상시 전원을 받고, 켜고 끄는 신호(T/C)만 함체 릴레이가 단락합니다.',rows:[
+      ['in','12V','w12','pb',''],['in','T/C','white-wire','enc','','릴레이 1 CH1 · 보드 A GPIO4'],['out','필름','white-wire','film','V-07']],
+      tips:['T/C 흰선(신호)·검정선(GND)을 함체 릴레이 1의 COM·NO에 연결']},
+    air:{say:'함체 보드 A가 IR 송신모듈로 공기청정기를 켜고 끕니다.',rows:[
+      ['in','IR 3선','sig','enc','V-01','보드 A GPIO5 · DAT·3.3V·GND'],['in','12V','w12','pb','V-03']],
+      tips:['IR 송신모듈은 공기청정기 IR 수신부 가까이 부착','암레스트 수납함 개폐 간섭 확인']},
+    dif:{say:'함체 보드 A가 IR 송신모듈로 디퓨저를 제어합니다.',rows:[
+      ['in','IR 3선','sig','enc','V-02','보드 A GPIO7 · DAT·3.3V·GND'],['in','5V','w5','pb','V-04']],
+      tips:['IR 송신모듈은 디퓨저 IR 수신부 가까이 부착','컵홀더 흔들림 방지']},
+    uvc:{say:'파워뱅크 12V가 함체 릴레이 2(COM→NO)를 거쳐 들어옵니다.',rows:[
+      ['in','12V','w12','enc','V-06','릴레이 2 · 보드 B GPIO5']],
+      tips:['2열 쪽을 향하게 고정','시트 앞뒤 이동 간섭 확인','도어 인터록 적용 여부 협의 중']},
+    sen:{say:'함체 보드 A와 I2C로 연결되고 전원도 보드 3.3V에서 받습니다.',rows:[
+      ['in','I2C 4선','sda','enc','V-05','보드 A GPIO8·9 · 3.3V']],
+      tips:['위치 미정. 흡배기구를 막지 않고 에어컨 바람이 직접 닿지 않는 곳','연장 후 실차 통신 확인']},
+    film:{say:'트렁크 PDLC 제어기에서 구동선이 옵니다.',rows:[['in','구동','white-wire','pdc','V-07']],
+      tips:['우측 뒷창 필름 시공, 제어기 선은 도어 안으로 인입']},
+    led:{say:'함체 보드 C가 데이터를 보내고, 전원 5V는 따로 받습니다.',rows:[
+      ['in','데이터·GND','sig','enc','V-08','보드 C GPIO18'],['in','5V','w5','pb','V-09','SMPS 또는 USB-C 미정']],
+      tips:['우측 뒷창 주변 부착, 형태 협의','데이터선과 GND를 함께 배선']},
+    rear:{say:'함체 보드 C에 연결 예정입니다.',rows:[['in','미정','tbd','enc','V-10','보드 C · 핀 미정']],tips:['모델·인터페이스·장착 위치 미정']},
+    proj:{say:'연결 방식과 설치 위치가 아직 정해지지 않았습니다.',rows:[],tips:['확정되면 배치와 배선을 추가']}
+  };
+  var BOARDS=[
+    {b:'보드 A',s:'PCS-IN-01',say:'<b>보드 A</b>: 공기청정기·디퓨저 IR 송신모듈(1열), SEN66 가스센서(2열), 릴레이 1(PDLC 제어기)',rows:[
+      ['out','GPIO5 IR','sig','air','V-01'],['out','GPIO7 IR','sig','dif','V-02'],['out','I2C','sda','sen','V-05'],['out','GPIO4','sig',{t:'릴레이 1',s:'함체 안 · PDLC용'},'']],
+      relay:['릴레이 1 (R1)<small>2ch · PDLC</small>',[['in','IN1','sig',{t:'보드 A GPIO4',s:'LOW = ON'},''],['out','COM·NO','white-wire','pdc','','T/C 흰선·검정선 단락'],['out','CH2','tbd',{t:'예비',s:'사용 안 함'},'']]]},
+    {b:'보드 B',s:'ID 미정',say:'<b>보드 B</b>: 릴레이 2로 파워뱅크 12V를 켜고 끄며, 1열 조수석 시트 하단 UVC 모듈에 전원을 보냅니다.',rows:[
+      ['out','GPIO5','sig',{t:'릴레이 2',s:'함체 안 · UVC용'},'']],
+      relay:['릴레이 2 (R2)<small>2ch · UVC</small>',[['in','IN','sig',{t:'보드 B GPIO5',s:'동작 레벨 미정'},''],['in','12V +','w12','pb','','COM으로'],['out','NO','w12','uvc','V-06','12V + 출력'],['out','예비','tbd',{t:'예비 채널',s:'사용 안 함'},'']]]},
+    {b:'보드 C',s:'ID 미정',say:'<b>보드 C</b>: LED 스트랩(2열 우측 뒷창), 후방센서(미정)',rows:[
+      ['out','GPIO18','sig','led','V-08'],['out','미정','tbd','rear','V-10']]}
+  ];
+  function rowHTML(r,extra){
+    var tgt=typeof r[3]==='string'?PBY[r[3]]:r[3], L=r[4]?rlen(RBY[r[4]]):null;
+    var sub=[r[5]||tgt.where||tgt.s, r[4]?r[4]+(L?' · 약 '+L.toFixed(1)+'m':''):''].filter(Boolean).join(' · ');
+    var tag=tgt.id?'button':'div', key=tgt.id?' data-key="c:'+tgt.id+'"':'';
+    return '<'+tag+' class="dg-r"'+key+'><span class="dg-w'+(r[0]==='in'?' in':'')+(r[2]==='tbd'?' dash':'')+'" style="--c:var(--'+r[2]+')"><i>'+r[1]+'</i></span>'+
+      '<span class="dg-d"><b>'+(tgt.n?tgt.n+'. ':'')+tgt.t+'</b><small>'+sub+'</small>'+(extra||'')+'</span></'+tag+'>';
+  }
+  function dg(center,rows,pcb){
+    return '<div class="dg"><div class="dg-c'+(pcb?' pcb':'')+'">'+center+'</div><div class="dg-rows">'+rows.join('')+'</div></div>';
+  }
+  function tips(list){return list&&list.length?'<ul class="vtips">'+list.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul>':'';}
+  function detailHTML(k){
+    var id=k.slice(2), h='<button class="back">← 부품 목록</button>';
+    if(k.charAt(0)==='r'){
+      var r=RBY[id], L=rlen(r), from=r.f?PBY[r.f]:null;
+      h+='<h4><span class="mono">'+r.id+'</span> '+r.t+'</h4><div class="where">'+r.w+(L?' · 약 '+L.toFixed(1)+'m (추정)':'')+'</div>';
+      if(from) h+=dg(from.n+'. '+from.t+'<small>'+from.sec+'</small>',[rowHTML(['out',r.id,r.c,r.to||{t:'OCU',s:'차량 · 위치 확인 필요'},'',r.w])],from.id==='enc');
+      return h+tips([r.note]);
+    }
+    var p=PBY[id];
+    h+='<h4><span class="no">'+p.n+'</span>'+p.t+(p.st==='tbd'?PILL.tbd:'')+'</h4><div class="where">'+p.sec+' · '+p.where+'</div>';
+    if(id==='enc'){
+      h+='<p class="say">함체 안에 ESP32-S3 보드 3개, 2채널 릴레이 2개(PDLC용·UVC용), USB 허브가 들어갑니다. 보드는 모두 USB 허브 하나로 미니 PC와 연결됩니다.</p>';
+      h+='<div class="encl"><div class="encl-h">통합 함체 내부</div>'+
+        dg('USB 허브',[rowHTML(['in','USB','usb','pc','','통신 · 보드 전원'],'<div class="fan"><span>→ 보드 A</span><span>→ 보드 B</span><span>→ 보드 C</span></div>')]);
+      BOARDS.forEach(function(b){h+='<div>'+dg(b.b+'<small>'+b.s+'</small>',b.rows.map(function(r){return rowHTML(r);}),1)+(b.relay?'<div style="margin-top:8px">'+dg(b.relay[0],b.relay[1].map(function(r){return rowHTML(r);}))+'</div>':'')+'<p class="say">'+b.say+'</p></div>';});
+      return h+'</div>'+tips(['덮개를 열면 보드별 단자대에서 선을 분리할 수 있게','각 선에 배선 ID 라벨']);
+    }
+    if(id==='pc'){
+      h+='<p class="say">미니 PC가 USB 허브를 거쳐 보드 A·B·C와 통신하고, 차량 OCU와는 USB-LAN으로 연결됩니다.</p>';
+      h+=dg('미니 PC<small>MQTT 브로커</small>',[
+        rowHTML(['in','DC','w19','pb','','전원']),
+        rowHTML(['out','USB','usb','enc','','함체 안 USB 허브'],'<div class="fan"><span>보드 A · 청정기·디퓨저·가스·PDLC</span><span>보드 B · UVC</span><span>보드 C · LED·후방</span></div>'),
+        rowHTML(['in','USB-LAN','usb',{t:'OCU',s:'차량 · 위치 확인 필요'},'V-11'])
+      ]);
+      return h+tips(['함체와 가까이 두어 USB선을 짧게','통풍 확보']);
+    }
+    var c=CONN[id]||{rows:[]};
+    if(c.say) h+='<p class="say">'+c.say+'</p>';
+    if(c.rows.length) h+=dg(p.n+'. '+p.t,c.rows.map(function(r){return rowHTML(r);}),0);
+    return h+tips(c.tips);
+  }
+  selHooks.push(function(k){
+    var list=document.getElementById('v-list'), det=document.getElementById('v-detail');
+    if(!k){det.hidden=true;list.hidden=false;return;}
+    det.innerHTML=detailHTML(k); det.hidden=false; list.hidden=true;
+    document.getElementById('v-side').scrollTop=0;
+    det.querySelector('.back').addEventListener('click',function(){selectV(null);});
+    det.querySelectorAll('[data-key]').forEach(function(e){e.addEventListener('click',function(){selectV(e.getAttribute('data-key'));});});
+  });
+  function bindKey(e){
+    e.addEventListener('click',function(){selectV(e.getAttribute('data-key'));});
+    e.addEventListener('keydown',function(ev){if(ev.key==='Enter'&&e.tagName==='TR'){ev.preventDefault();selectV(e.getAttribute('data-key'));}});
+  }
+
+  /* 부품 목록 */
+  var STL={ok:PILL.ok,tbd:PILL.tbd,est:'<span class="pill st-est">추정</span>'};
+  var lh='', lastSec=null;
+  PARTS.forEach(function(p){
+    if(p.sec!==lastSec){lh+='<h4>'+p.sec+'</h4>';lastSec=p.sec;}
+    lh+='<button class="pi" data-key="c:'+p.id+'"><span class="no">'+p.n+'</span><span><b>'+p.t+'</b><small>'+p.where+'</small></span>'+(p.st==='tbd'?PILL.tbd:'')+'</button>';
+  });
+  document.getElementById('v-list').innerHTML=lh;
+
+  /* 연장 배선 표 */
+  table('veh-routes',['ID','구간','선 구성','추정 길이','주의'],ROUTES.map(function(r){
+    var L=rlen(r);
+    return ['§'+r.id,r.t,r.w,L?'약 '+L.toFixed(1)+'m':(r.inTrunk?'트렁크 안':PILL.tbd),r.note,'r:'+r.id];
+  }),function(r){return ' data-key="'+r[5]+'" tabindex="0"';});
+  document.querySelectorAll('#vehicle .pi, #veh-routes tr[data-key]').forEach(bindKey);
+
+  /* 평면도 */
+  function plan(id,P,o){
+    var s=document.getElementById(id);
+    function R(x0,x1,z0,z1,cls,rx,style){
+      var a=P(x0,z0),b=P(x1,z1);
+      var e=el('rect',{'class':cls,x:Math.min(a[0],b[0]),y:Math.min(a[1],b[1]),width:Math.abs(a[0]-b[0]),height:Math.abs(a[1]-b[1]),rx:rx||0});
+      if(style)e.setAttribute('style',style); s.appendChild(e); return e;
+    }
+    function T(x,z,txt,cls,dy){var p=P(x,z);s.appendChild(el('text',{x:p[0],y:p[1]+(dy||4),'text-anchor':'middle','class':cls||'sm'},txt));}
+    [900,3580].forEach(function(x){[-1,1].forEach(function(k){R(x-370,x+370,k*800,k*1000,'whl',3);});});
+    R(0,VEH.L,-945,945,'car',o.rx);
+    SECS.forEach(function(sc,i){R(sc[1],sc[2],-930,930,'band'+(i%2?' b2':''));T((sc[1]+sc[2])/2,1090,sc[0],'zl');});
+    R(1050,1450,-880,880,'int',3);
+    [1,-1].forEach(function(k){R(1750,2330,k*170,k*690,'int',5);});
+    T(2040,430,'운전석','xs'); T(2040,-430,'조수석','xs');
+    R(1480,1530,250,610,'int',6);
+    R(1450,2250,-130,130,'int',3); R(1950,2250,-140,140,'int arm',3);
+    [55,-55].forEach(function(z){var p=P(1650,z);s.appendChild(el('circle',{'class':'int',cx:p[0],cy:p[1],r:42*o.s}));});
+    R(2650,3260,-780,780,'int',5);
+    R(3350,4620,-880,880,'int',4,'stroke-dasharray:4 3;fill:none');
+    T(-170,0,o.front,'b',4);
+    ROUTES.forEach(function(r){
+      if(!r.p) return;
+      var e=el('polyline',{'class':'vr'+(r.st==='tbd'?' dash':''),'data-key':'r:'+r.id,points:r.p.map(function(q){return P(q[0],q[2]).join(',');}).join(' '),style:'stroke:var(--'+r.c+')'});
+      s.appendChild(e);
+    });
+    PARTS.forEach(function(p){
+      var e=null, c=p.b?[(p.b[0]+p.b[1])/2,(p.b[4]+p.b[5])/2]:null, st='fill:var(--'+p.c+')'+(p.st==='tbd'?';stroke-dasharray:3 2;fill-opacity:.55':'');
+      if(p.b) e=R(p.b[0],p.b[1],p.b[4],p.b[5],'vp',2,st);
+      else if(p.cyl){var q=P(p.cyl[0],p.cyl[1]);e=el('circle',{'class':'vp',cx:q[0],cy:q[1],r:p.cyl[2]*o.s+1.5,style:st});s.appendChild(e);c=[p.cyl[0],p.cyl[1]];}
+      else if(p.plane) e=R(p.plane[0],p.plane[1],p.plane[4]-22,p.plane[4]+22,'vp',2,st);
+      else if(p.frame) e=R(p.frame[0],p.frame[1],p.frame[4]+30,p.frame[4]+60,'vp',2,st+';stroke-dasharray:5 3');
+      if(!e) return;
+      e.setAttribute('data-key','c:'+p.id);
+      var m=p.m||c, mp=P(m[0],m[1]), g=el('g',{'class':'mk','data-key':'c:'+p.id});
+      g.appendChild(el('circle',{cx:mp[0],cy:mp[1],r:9.5}));
+      g.appendChild(el('text',{x:mp[0],y:mp[1]+3.8,'text-anchor':'middle'},String(p.n)));
+      s.appendChild(g);
+    });
+    s.querySelectorAll('[data-key]').forEach(bindKey);
+  }
+  plan('plan-wide',function(x,z){return [56+x*.165,210+z*.165];},{s:.165,rx:34,front:'◀ 앞'});
+  plan('plan-tall',function(x,z){return [180-z*.12,48+x*.12];},{s:.12,rx:26,front:'▲ 앞'});
+
+  /* 3D */
+  var V3=null, reduceMotion=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function css(n){return (getComputedStyle(document.documentElement).getPropertyValue('--'+n)||'').trim()||'#888888';}
+  function init3d(){
+    if(V3){V3.resize();return;}
+    var stage=document.getElementById('v-stage'), cv=document.getElementById('v-canvas'), T=window.THREE, ren;
+    try{ if(!T) throw new Error('three'); ren=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:true}); }
+    catch(err){
+      stage.hidden=true; document.getElementById('v-tools').hidden=true; document.getElementById('v-fallback').hidden=false;
+      V3={resize:function(){}}; return;
+    }
+    ren.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+    var scene=new T.Scene(), cam=new T.PerspectiveCamera(32,1,50,80000);
+    var orb={th:2.25,ph:1.0,r:7600,t:new T.Vector3(2450,750,0)};
+    var VIEWS={all:{th:2.25,ph:1.0,r:7600,t:[2450,750,0]},top:{th:0,ph:.001,r:7400,t:[2400,700,0]},
+      side:{th:Math.PI,ph:1.5,r:7000,t:[2400,900,0]},r1:{th:2.5,ph:.9,r:4400,t:[1900,750,0]},trunk:{th:1.95,ph:.8,r:4600,t:[3950,750,0]}};
+    var comp={}, rmesh={}, spr={}, picks=[], inner=[];
+    var FONT='"IBM Plex Sans KR","Malgun Gothic",sans-serif';
+    function V(p){return new T.Vector3(p[0],p[1],p[2]);}
+    function mat(tok,op,basic){
+      var o={color:css(tok)}; if(op<1){o.transparent=true;o.opacity=op;o.depthWrite=false;}
+      if(basic) return new T.MeshBasicMaterial(o);
+      o.roughness=.85; o.metalness=0; return new T.MeshStandardMaterial(o);
+    }
+    function addBox(b,tok,op,edge){
+      var g=new T.BoxGeometry(b[1]-b[0],b[3]-b[2],b[5]-b[4]), m=new T.Mesh(g,mat(tok,op==null?1:op));
+      m.position.set((b[0]+b[1])/2,(b[2]+b[3])/2,(b[4]+b[5])/2); scene.add(m);
+      if(edge){var l=new T.LineSegments(new T.EdgesGeometry(g),new T.LineBasicMaterial({color:css(edge),transparent:true,opacity:.6}));m.add(l);}
+      return m;
+    }
+    function addCyl(x,z,r,y0,y1,tok,op){var m=new T.Mesh(new T.CylinderGeometry(r,r,y1-y0,28),mat(tok,op==null?1:op));m.position.set(x,(y0+y1)/2,z);scene.add(m);return m;}
+    function line(pts,tok){scene.add(new T.Line(new T.BufferGeometry().setFromPoints(pts.map(V)),new T.LineBasicMaterial({color:css(tok||'line-strong')})));}
+    function tube(pts,tok,rad,op){
+      var path=new T.CurvePath();
+      for(var i=1;i<pts.length;i++) path.add(new T.LineCurve3(V(pts[i-1]),V(pts[i])));
+      var m=new T.Mesh(new T.TubeGeometry(path,pts.length*16,rad,6,false),mat(tok,op,true));
+      m.material.transparent=true; m.userData.op=op; scene.add(m); return m;
+    }
+    function tex(text,fg,bg,round){
+      var c=document.createElement('canvas'), x=c.getContext('2d'), H=96;
+      x.font='600 '+(H*.52)+'px '+FONT;
+      var W=round?H:Math.ceil(x.measureText(text).width+H*.8);
+      c.width=W; c.height=H; x.font='600 '+(H*.52)+'px '+FONT;
+      x.fillStyle=bg; x.beginPath();
+      if(round) x.arc(H/2,H/2,H/2-2,0,Math.PI*2);
+      else {var r=H/2-4;x.moveTo(r+4,4);x.lineTo(W-r-4,4);x.arc(W-r-4,H/2,r,-Math.PI/2,Math.PI/2);x.lineTo(r+4,H-4);x.arc(r+4,H/2,r,Math.PI/2,Math.PI*1.5);}
+      x.fill(); x.fillStyle=fg; x.textAlign='center'; x.textBaseline='middle'; x.fillText(text,W/2,H/2+3);
+      var t=new T.CanvasTexture(c); t.minFilter=T.LinearFilter; t.userData={ar:W/H}; return t;
+    }
+    function sprite(t,h){var s=new T.Sprite(new T.SpriteMaterial({map:t,depthTest:false,transparent:true,sizeAttenuation:false}));s.scale.set(h*t.userData.ar,h,1);s.renderOrder=10;scene.add(s);return s;}
+    var PROFILE=[[0,240],[0,820],[140,960],[1080,1060],[1800,1690],[1960,1735],[4380,1735],[4640,1480],[4715,1060],[4715,240]];
+
+    function build(){
+      while(scene.children.length) scene.remove(scene.children[0]);
+      comp={}; rmesh={}; spr={}; picks=[]; inner=[];
+      scene.add(new T.HemisphereLight(0xffffff,0x777777,.95));
+      var dl=new T.DirectionalLight(0xffffff,.55); dl.position.set(-3000,6000,2500); scene.add(dl);
+      // 차체
+      var sh=new T.Shape(); PROFILE.forEach(function(p,i){if(i)sh.lineTo(p[0],p[1]);else sh.moveTo(p[0],p[1]);});
+      var bg=new T.ExtrudeGeometry(sh,{depth:VEH.W,bevelEnabled:false}); bg.translate(0,0,-VEH.W/2);
+      var bm=new T.Mesh(bg,mat('line-strong',.07,true)); bm.material.side=T.DoubleSide; scene.add(bm);
+      scene.add(new T.LineSegments(new T.EdgesGeometry(bg,10),new T.LineBasicMaterial({color:css('line-strong')})));
+      [-1,1].forEach(function(k){var z=k*VEH.W/2; line([[1080,1060,z],[4640,1060,z]]); line([[2480,1060,z],[2480,1735,z]]); line([[3330,1060,z],[3330,1735,z]]);});
+      [900,3580].forEach(function(x){[-1,1].forEach(function(k){var w=new T.Mesh(new T.CylinderGeometry(370,370,230,28),mat('gnd',.85));w.rotation.x=Math.PI/2;w.position.set(x,370,k*(VEH.W/2-125));scene.add(w);});});
+      // 실내
+      addBox([300,3350,330,380,-880,880],'line',1,'line-strong');
+      addBox([3350,4620,330,640,-880,880],'line',1,'line-strong');
+      addBox([1050,1450,700,1100,-880,880],'line',1,'line-strong');
+      [1,-1].forEach(function(k){var zc=k*430;
+        addBox([1750,2230,380,640,zc-260,zc+260],'line',1,'line-strong');
+        addBox([2200,2330,640,1380,zc-250,zc+250],'line',1,'line-strong');
+        addBox([2225,2305,1400,1560,zc-130,zc+130],'line',1,'line-strong');});
+      var wheel=new T.Mesh(new T.TorusGeometry(185,24,8,28),mat('line-strong')); wheel.position.set(1500,1000,430); wheel.rotation.y=Math.PI/2; scene.add(wheel);
+      addBox([1450,2250,380,700,-130,130],'line',1,'line-strong');
+      addBox([1950,2250,700,760,-140,140],'line-strong',1,'ink');
+      [55,-55].forEach(function(z){addCyl(1650,z,42,700,706,'ink',.5);});
+      addBox([2650,3150,380,660,-780,780],'line',1,'line-strong');
+      addBox([3120,3260,660,1420,-780,780],'line',1,'line-strong');
+      [-500,0,500].forEach(function(z){addBox([3140,3230,1440,1580,z-120,z+120],'line',1,'line-strong');});
+      // 구역
+      SECS.forEach(function(sc,i){
+        addBox([sc[1],sc[2],sc[3]+1,sc[3]+8,-860,860],'accent',i%2?.16:.28);
+        var l=sprite(tex(sc[0],css('accent'),css('surface')),.034); l.position.set((sc[1]+sc[2])/2,2080,0);
+      });
+      // 부품
+      PARTS.forEach(function(p){
+        var ms=[], op=p.st==='tbd'?.6:.95, lp=null;
+        if(p.b){ms.push(addBox(p.b,p.c,op,'ink'));lp=[(p.b[0]+p.b[1])/2,p.b[3]+170,(p.b[4]+p.b[5])/2];}
+        else if(p.cyl){ms.push(addCyl(p.cyl[0],p.cyl[1],p.cyl[2],p.cyl[3],p.cyl[4],p.c,op));lp=[p.cyl[0],p.cyl[4]+170,p.cyl[1]];}
+        else if(p.plane){var q=p.plane,m=new T.Mesh(new T.PlaneGeometry(q[1]-q[0],q[3]-q[2]),mat(p.c,.45));m.material.side=T.DoubleSide;m.position.set((q[0]+q[1])/2,(q[2]+q[3])/2,q[4]);scene.add(m);ms.push(m);lp=[q[0]+160,q[3]+180,q[4]-60];}
+        else if(p.frame){var f=p.frame;ms.push(tube([[f[0],f[2],f[4]],[f[1],f[2],f[4]],[f[1],f[3],f[4]],[f[0],f[3],f[4]],[f[0],f[2],f[4]]],p.c,20,1));lp=[f[1]-160,f[3]+180,f[4]-60];}
+        if(!ms.length) return;
+        var tn=tex(String(p.n),css('surface'),css('ink'),1), th=tex(String(p.n),css('surface'),css('accent'),1), s=sprite(tn,.03);
+        s.position.set(lp[0],lp[1],lp[2]);
+        ms.concat([s]).forEach(function(m){m.userData.key='c:'+p.id;picks.push(m);});
+        comp[p.id]=ms; spr[p.id]={s:s,n:tn,h:th};
+      });
+      // 함체 안 보드 A·B·C (함체 선택 시 표시)
+      [['A',545,625],['B',415,495],['C',285,365]].forEach(function(q){
+        var m=addBox([3520,3650,680,710,q[1],q[2]],'pcb',1,'accent'), l=sprite(tex(q[0],css('surface'),css('accent'),1),.026);
+        l.position.set(3585,900,(q[1]+q[2])/2); m.userData.key=l.userData.key='c:enc'; inner.push(m,l);
+      });
+      [['R1',530,630],['R2',400,500]].forEach(function(q){
+        var m=addBox([3680,3780,680,740,q[1],q[2]],'doc',1,'ink'), l=sprite(tex(q[0],css('surface'),css('doc')),.024);
+        l.position.set(3760,900,(q[1]+q[2])/2); inner.push(m,l);
+      });
+      inner.forEach(function(o){o.visible=false;});
+      // 배선
+      ROUTES.forEach(function(r){
+        if(!r.p) return;
+        var m=tube(r.p,r.c,15,r.st==='tbd'?.45:1); m.userData.key='r:'+r.id; picks.push(m); rmesh[r.id]=m;
+      });
+    }
+    function applySel(k,rel){
+      Object.keys(rmesh).forEach(function(id){var m=rmesh[id];m.material.opacity=(!rel||rel['r:'+id])?m.userData.op:.1;});
+      Object.keys(comp).forEach(function(id){
+        var on=!!rel&&!!rel['c:'+id];
+        comp[id].forEach(function(m){if(m.material.emissive){m.material.emissive.set(on?css('accent'):'#000000');m.material.emissiveIntensity=on?.5:0;}});
+        spr[id].s.material.map=on?spr[id].h:spr[id].n; spr[id].s.material.needsUpdate=true;
+      });
+      var open=k==='c:enc';
+      inner.forEach(function(o){o.visible=open;});
+      if(comp.enc){comp.enc[0].material.opacity=open?.15:.95;spr.enc.s.visible=!open;}
+      render();
+    }
+    var raf=0;
+    function render(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;ren.render(scene,cam);});}
+    function place(){
+      var k=Math.max(1,1.5/cam.aspect), r=orb.r*k, s=Math.sin(orb.ph);
+      cam.position.set(orb.t.x+r*s*Math.sin(orb.th),orb.t.y+r*Math.cos(orb.ph),orb.t.z+r*s*Math.cos(orb.th));
+      cam.lookAt(orb.t); render();
+    }
+    function resize(){
+      var w=stage.clientWidth,h=stage.clientHeight; if(!w||!h) return;
+      ren.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix(); place();
+    }
+    var tw=0;
+    function pressed(name){document.querySelectorAll('#v-tools button').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-view')===name?'true':'false');});}
+    function focus(k){
+      if(!k||k.charAt(0)!=='c') return;
+      var p=PBY[k.slice(2)], c=null;
+      if(p.b) c=[(p.b[0]+p.b[1])/2,(p.b[2]+p.b[3])/2,(p.b[4]+p.b[5])/2];
+      else if(p.cyl) c=[p.cyl[0],(p.cyl[3]+p.cyl[4])/2,p.cyl[1]];
+      else if(p.plane||p.frame){var q=p.plane||p.frame;c=[(q[0]+q[1])/2,(q[2]+q[3])/2,q[4]];}
+      if(!c) return;
+      go(null,{th:orb.th,ph:Math.min(orb.ph,1.1),r:p.id==='enc'?3000:3400,t:c});
+    }
+    function go(name,custom){
+      var v=custom||VIEWS[name], a={th:orb.th,ph:orb.ph,r:orb.r,t:orb.t.clone()}, tt=V(v.t), d=v.th-orb.th;
+      d=Math.atan2(Math.sin(d),Math.cos(d)); pressed(name); cancelAnimationFrame(tw);
+      if(reduceMotion){orb.th=a.th+d;orb.ph=v.ph;orb.r=v.r;orb.t.copy(tt);place();return;}
+      var t0=performance.now();
+      (function step(now){
+        var q=Math.min(1,(now-t0)/500), e=1-Math.pow(1-q,3);
+        orb.th=a.th+d*e; orb.ph=a.ph+(v.ph-a.ph)*e; orb.r=a.r+(v.r-a.r)*e; orb.t.lerpVectors(a.t,tt,e); place();
+        if(q<1) tw=requestAnimationFrame(step);
+      })(t0);
+    }
+    function zoom(f){orb.r=Math.min(18000,Math.max(1500,orb.r*f));place();}
+    var rc=new T.Raycaster(), nd=new T.Vector2();
+    function pick(e){
+      var b=cv.getBoundingClientRect();
+      nd.set((e.clientX-b.left)/b.width*2-1,-(e.clientY-b.top)/b.height*2+1); rc.setFromCamera(nd,cam);
+      var hit=rc.intersectObjects(picks,false), sp=hit.filter(function(h){return h.object.isSprite;});
+      var h=sp[0]||hit[0]; selectV(h?h.object.userData.key:null);
+    }
+    // 한 손가락(마우스) = 회전, 두 손가락 = 확대·축소
+    var drag=null, pts={}, pinch=0;
+    function npts(){return Object.keys(pts).length;}
+    function gap(){var k=Object.keys(pts),a=pts[k[0]],b=pts[k[1]];return Math.sqrt(Math.pow(a.x-b.x,2)+Math.pow(a.y-b.y,2));}
+    cv.addEventListener('pointerdown',function(e){
+      pts[e.pointerId]={x:e.clientX,y:e.clientY};
+      try{cv.setPointerCapture(e.pointerId);}catch(_){}
+      if(npts()===2){pinch=gap();drag=null;cv.style.touchAction='none';}
+      else drag={x:e.clientX,y:e.clientY,m:0};
+    });
+    cv.addEventListener('pointermove',function(e){
+      if(pts[e.pointerId]) pts[e.pointerId]={x:e.clientX,y:e.clientY};
+      if(npts()>=2&&pinch){var g=gap(); if(g>0){cancelAnimationFrame(tw);zoom(pinch/g);pinch=g;} return;}
+      if(!drag) return;
+      var dx=e.clientX-drag.x, dy=e.clientY-drag.y; drag.x=e.clientX; drag.y=e.clientY; drag.m+=Math.abs(dx)+Math.abs(dy);
+      if(drag.m<4) return;
+      cancelAnimationFrame(tw); orb.th-=dx*.006; orb.ph=Math.min(1.55,Math.max(.001,orb.ph-dy*.006)); pressed(null); place();
+    });
+    function up(e,ok){
+      delete pts[e.pointerId];
+      if(ok&&drag&&drag.m<6&&!pinch) pick(e);
+      if(npts()<2){pinch=0;cv.style.touchAction='';}
+      drag=null;
+    }
+    cv.addEventListener('pointerup',function(e){up(e,1);});
+    cv.addEventListener('pointercancel',function(e){up(e,0);});
+    cv.addEventListener('wheel',function(e){e.preventDefault();zoom(Math.exp(e.deltaY*.0012));},{passive:false});
+    document.querySelectorAll('#v-tools button').forEach(function(b){b.addEventListener('click',function(){go(b.getAttribute('data-view'));});});
+    document.querySelectorAll('.zoom button').forEach(function(b){b.addEventListener('click',function(){zoom(+b.getAttribute('data-zoom'));});});
+    function rebuild(){build();applySel(selKey,selRel);}
+    if(window.matchMedia){var mq=matchMedia('(prefers-color-scheme: dark)'); if(mq.addEventListener) mq.addEventListener('change',rebuild);}
+    new MutationObserver(rebuild).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(rebuild);
+    selHooks.push(applySel);
+    selHooks.push(focus);
+    V3={resize:resize};
+    rebuild();
+    if(window.ResizeObserver) new ResizeObserver(resize).observe(stage); else window.addEventListener('resize',resize);
+    resize();
+  }
+
+  var h=(location.hash||'').slice(1);
+  select(TABS.indexOf(h)>=0?h:'board-a',false);
+})();
+</script>
