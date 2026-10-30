@@ -240,7 +240,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
 
 <header class="top wrap">
   <div class="t">
-    <div class="eyebrow">작업지시서 · v0.6 · 2026-10-30</div>
+    <div class="eyebrow">작업지시서 · v0.7 · 2026-10-30</div>
     <h1>PCS 차량 작업지시서</h1>
   </div>
   <div class="meta">
@@ -323,7 +323,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     <div class="req">
       <div><h3>마감</h3><ul><li>트렁크 내장과 어울리는 외관 (무광 블랙 계열)</li><li>모서리 라운드, 노출 나사 최소화</li></ul></div>
       <div><h3>편의</h3><ul><li>윗면 덮개 탈착 (나사 4개 또는 힌지)</li><li>보드 USB 포트에 손이 닿게</li><li>선은 커넥터로 분리 가능하게</li></ul></div>
-      <div><h3>배선 인출</h3><ul><li>앞면(실내 쪽)에 케이블 글랜드 8개</li><li>왼쪽 옆면에 USB 입구 1개</li><li>모든 선 끝에 번호 라벨</li></ul></div>
+      <div><h3>배선 인출</h3><ul><li>앞면(실내 쪽)에 케이블 글랜드 8개</li><li>왼쪽 옆면에 USB 케이블 3개 입구 (그로밋 1곳)</li><li>모든 선 끝에 번호 라벨</li></ul></div>
       <div><h3>고정·발열</h3><ul><li>바닥 브래킷 4곳으로 트렁크 바닥 고정</li><li>양 옆면 통풍 슬롯</li><li>부품은 바닥판에 스페이서로 고정</li></ul></div>
     </div>
   </div>
@@ -332,9 +332,9 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
       <thead><tr><th>부품</th><th>수량</th><th>대략 크기</th><th>역할</th></tr></thead>
       <tbody>
         <tr><td>ESP32-S3 보드 + 단자 어댑터</td><td>3</td><td class="mono">약 95 × 65mm</td><td>A: 공기청정기·디퓨저·PDLC·가스센서 / B: UVC / C: LED·후방센서</td></tr>
-        <tr><td>2채널 릴레이 모듈</td><td>2</td><td class="mono">약 50 × 40mm</td><td>R1: PDLC 제어기용 / R2: UVC 전원용 (각 1채널 예비)</td></tr>
-        <tr><td>USB 허브</td><td>1</td><td class="mono">약 90 × 35mm</td><td>미니 PC ↔ 보드 3개</td></tr>
-        <tr><td>12V 단자대</td><td>1</td><td class="mono">약 50 × 25mm</td><td>파워뱅크 12V → R2 → UVC</td></tr>
+        <tr><td>2채널 릴레이 모듈</td><td>1</td><td class="mono">약 50 × 40mm</td><td>보드 B가 제어 · 1번 채널 UVC 전원 / 2번 채널 PDLC 제어기</td></tr>
+        <tr><td>12V 단자대</td><td>1</td><td class="mono">약 50 × 25mm</td><td>파워뱅크 12V → 릴레이 1번 채널 → UVC</td></tr>
+        <tr><td>USB 케이블</td><td>3</td><td class="mono">–</td><td>미니 PC → 보드 A (USB-A↔C) · 보드 B, C (USB-C↔C)</td></tr>
       </tbody>
     </table></div>
     <small class="mute">부품은 애니랙티브가 준비하고, 함체 안 배치·배선은 현장에서 함께 합니다.</small>
@@ -351,7 +351,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
   <div class="sub" data-subp="a-a">
     <div class="team">
       <div><b>현장 작업 (리워크 업체)</b><ul><li>내장재 탈거·복원</li><li>장비 고정, 함체 제작</li><li>차량 전원·통신 결선, 배선 연장·정리</li></ul></div>
-      <div class="ours"><b style="color:var(--ours)">애니랙티브 준비·지원</b><ul><li>제어 보드·릴레이·허브, 기기 본품</li><li>케이블·변환기, 함체 내부 구성</li><li>현장 동행, 위치 안내, 동작 확인</li></ul></div>
+      <div class="ours"><b style="color:var(--ours)">애니랙티브 준비·지원</b><ul><li>제어 보드·릴레이, 기기 본품</li><li>케이블·변환기, 함체 내부 구성</li><li>현장 동행, 위치 안내, 동작 확인</li></ul></div>
       <div><b>함께</b><ul><li>설치 위치 최종 확정</li><li>배선 경로·길이 확인</li><li>동작 점검, 완료 사진 정리</li></ul></div>
     </div>
     <small class="mute">위 3D에서 부품을 누르거나 아래 칩을 누르면, 그 자리에서 연결할 선과 할 일만 보입니다. 체크 표시는 지금 보고 있는 기기에만 저장됩니다.</small>
@@ -412,9 +412,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
       {id:'A',t:'보드 A',s:'ESP32-S3',u:[15,80],v:[95,190],k:'pcb'},
       {id:'B',t:'보드 B',s:'ESP32-S3',u:[95,160],v:[95,190],k:'pcb'},
       {id:'C',t:'보드 C',s:'ESP32-S3',u:[175,240],v:[95,190],k:'pcb'},
-      {id:'HUB',t:'USB 허브',s:'',u:[252,287],v:[95,185],k:'hub'},
-      {id:'R1',t:'R1',s:'2ch 릴레이 · PDLC',u:[15,65],v:[18,58],k:'relay'},
-      {id:'R2',t:'R2',s:'2ch 릴레이 · UVC',u:[80,130],v:[18,58],k:'relay'},
+      {id:'R',t:'2ch 릴레이',s:'1번 UVC · 2번 PDLC',u:[15,75],v:[18,62],k:'relay'},
       {id:'TB',t:'12V 단자대',s:'',u:[148,198],v:[25,50],k:'tb'}
     ],
     glands:[['V-01',30],['V-02',60],['V-05',90],['V-06',120],['V-08',150],['V-10',180],['T-3',215],['T-2',250]]};
@@ -427,28 +425,28 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
       todo:['작업 전 12V 보조배터리 (−) 분리','OCU 고정 · 바닥 브래킷이 차체 금속에 닿게','하네스 A-A, A-B, A-C를 OCU에 체결','O-1 전원 11가닥을 실내 퓨즈박스에 결선','O-2 접지 6가닥을 차체 접지에 체결','O-3 MM-CAN을 AVN에, O-4 B-CAN을 게이트웨이에 결선','업데이트용 USB 케이블 연결 후 고정','쓰지 않는 선 절연·고정'],
       prep:['USB A-A 젠더, USB-LAN 변환기, LAN 케이블(약 5m)','효림XE 하네스 도면 V0.1, 연결 가이드 사진','효림XE의 MM-CAN 단자 수령 여부 사전 확인','결선 후 OCU 전원 확인 함께 진행'],
       warn:['BATT+ 라인은 최대 13A까지 흐를 수 있습니다. 퓨즈 탭 용량을 넘지 않게 퓨즈·선 굵기를 정해 주세요.','IGN1·IGN2·BATT+가 모두 노란색입니다. 라벨을 꼭 확인해 주세요.','CAN 선은 꼬인 상태 그대로 연장하고 H/L이 바뀌지 않게 주의해 주세요.','하네스 도면은 비공식 편집본입니다. 그림보다 2페이지 표를 기준으로 봐 주세요.'],tpl:'tpl-ocu'},
-    {id:'enc',n:2,g:'w2',t:'통합 함체',sub:'보드 3개 · 릴레이 2개 · USB 허브',where:'트렁크 바닥 앞쪽 (2열 등받이 뒤)',b:[ENC.x0,ENC.x0+ENC.D,ENC.y0,ENC.y0+ENC.H,ENC.z0-ENC.W,ENC.z0],
+    {id:'enc',n:2,g:'w2',t:'통합 함체',sub:'보드 3개 · 2채널 릴레이 1개',where:'트렁크 바닥 앞쪽 (2열 등받이 뒤)',b:[ENC.x0,ENC.x0+ENC.D,ENC.y0,ENC.y0+ENC.H,ENC.z0-ENC.W,ENC.z0],
       say:'함체를 제작해 트렁크에 고정합니다. 1·2열로 가는 선은 모두 앞면 글랜드로 나갑니다.',
-      todo:['함체 제작 (모형 도면 참고)','트렁크 바닥 고정 (브래킷 4곳)','내부 부품 배치·고정 (애니랙티브와 함께)','글랜드 8곳·USB 입구 처리, 선 끝 라벨'],
-      prep:['ESP32-S3 보드 3개(프로그램 적재), 2ch 릴레이 2개, USB 허브, 12V 단자대','함체 내부 배선 함께 구성'],
+      todo:['함체 제작 (모형 도면 참고)','트렁크 바닥 고정 (브래킷 4곳)','내부 부품 배치·고정 (애니랙티브와 함께)','글랜드 8곳·USB 케이블 3개 입구 처리, 선 끝 라벨'],
+      prep:['ESP32-S3 보드 3개(프로그램 적재), 2채널 릴레이 1개, 12V 단자대','USB 케이블 3개 (A-C 1개, C-C 2개)','함체 내부 배선 함께 구성'],
       warn:['보드 USB 포트는 덮개를 열면 바로 닿는 방향으로 둡니다.','12V(UVC) 선과 신호선은 함체 안에서 서로 떨어뜨려 묶어 주세요.'],tpl:'tpl-enc'},
     {id:'pb',n:3,g:'w2',t:'파워뱅크',sub:'EcoFlow · 모든 기기 전원',where:'트렁크 오른쪽',b:[3950,4380,640,940,-560,-80],
       say:'파워뱅크를 고정하고, 기기별 전원선과 어댑터를 정리합니다.',
       todo:['파워뱅크 고정 (탈착·충전이 쉽게)','어댑터·전원선 정리 (V-03, V-04, V-09, T-2, T-4, T-5)'],
       prep:['파워뱅크, 기기별 전원 어댑터'],warn:['충전 케이블을 꽂을 수 있게 앞쪽을 비워 둡니다.']},
-    {id:'pc',n:4,g:'w2',t:'미니 PC',sub:'보드 3개를 USB로 제어',where:'트렁크 왼쪽',b:[3900,4150,640,700,380,620],
-      say:'미니 PC를 고정하고, 함체 USB와 OCU에서 온 LAN 케이블을 연결합니다.',
-      todo:['미니 PC 고정 (통풍 확보)','T-1 USB를 함체 USB 입구에 연결','V-11 LAN 케이블 연결'],prep:['미니 PC, 전원 어댑터, USB 케이블'],warn:[]},
+    {id:'pc',n:4,g:'w2',t:'미니 PC',sub:'보드 3개를 USB로 직접 연결',where:'트렁크 왼쪽',b:[3900,4150,640,700,380,620],
+      say:'미니 PC를 고정하고, 보드 3개로 가는 USB 케이블 3개와 OCU에서 온 LAN 케이블을 연결합니다.',
+      todo:['미니 PC 고정 (통풍 확보)','T-1 USB 3개 연결 · USB-A → 보드 A, USB-C → 보드 B·C','V-11 LAN 케이블 연결'],prep:['미니 PC, 전원 어댑터, USB 케이블 3개 (A-C 1개, C-C 2개)'],warn:[]},
     {id:'pdc',n:5,g:'w2',t:'PDLC 제어기',sub:'필름 구동 장치',where:'트렁크 오른쪽 앞',b:[3500,3650,640,700,-640,-400],
-      say:'PDLC 제어기를 고정하고, 함체 릴레이 R1의 신호선과 필름 구동선을 연결합니다.',
-      todo:['PDLC 제어기 고정','T-3 신호선(흰·검정)을 함체 R1에 연결','T-4 12V 어댑터 연결','V-07 필름 구동선 연결'],prep:['PDLC 제어기, 12V 어댑터'],warn:['필름 구동선은 고전압 교류일 수 있습니다. 절연을 확실히 해 주세요.']},
+      say:'PDLC 제어기를 고정하고, 함체 릴레이 2번 채널의 신호선과 필름 구동선을 연결합니다.',
+      todo:['PDLC 제어기 고정','T-3 신호선(흰·검정)을 함체 릴레이 2번 채널에 연결','T-4 12V 어댑터 연결','V-07 필름 구동선 연결'],prep:['PDLC 제어기, 12V 어댑터'],warn:['필름 구동선은 고전압 교류일 수 있습니다. 절연을 확실히 해 주세요.']},
     {id:'air',n:6,g:'w3',t:'공기청정기',sub:'IR 제어 · 12V',where:'1열 좌석 사이 암레스트 위',b:[1990,2230,760,1050,-115,115],
       say:'암레스트 위에 고정하고 12V 전원과 IR 송신모듈을 연결합니다.',
       todo:['암레스트 위 고정 (미끄럼 방지, 탈착 가능)','V-03 12V 전원 연결','V-01 IR 송신모듈을 기기 IR 수신부 옆에 부착'],prep:['공기청정기 본품, IR 송신모듈'],warn:['IR 송신모듈 위치는 함께 동작을 보며 정합니다.']},
     {id:'dif',n:7,g:'w3',t:'디퓨저',sub:'IR 제어 · 5V',where:'1열 컵홀더 (좌·우 협의)',cyl:[1650,-55,40,690,880],
       say:'컵홀더에 고정하고 5V 전원과 IR 송신모듈을 연결합니다.',
       todo:['컵홀더 고정','V-04 5V 전원 연결 (굵은 선)','V-02 IR 송신모듈을 기기 IR 수신부 옆에 부착'],prep:['디퓨저 본품, IR 송신모듈'],warn:['5V 선은 길면 전압이 떨어집니다. 굵은 선을 써 주세요.']},
-    {id:'uvc',n:8,g:'w3',t:'UVC 모듈',sub:'12V · 릴레이 R2',where:'조수석 시트 뒤 하단, 2열을 향함',b:[2250,2390,380,450,-560,-220],
+    {id:'uvc',n:8,g:'w3',t:'UVC 모듈',sub:'12V · 릴레이 1번 채널',where:'조수석 시트 뒤 하단, 2열을 향함',b:[2250,2390,380,450,-560,-220],
       say:'조수석 시트 뒤 하단에 2열을 향하게 고정하고 12V 선을 연결합니다.',
       todo:['조수석 시트 뒤 하단 고정 (2열 방향)','V-06 12V 2가닥 연결'],prep:['UVC 모듈 본품'],warn:['시트 레일이 앞뒤로 움직여도 선이 걸리지 않게 여유를 두세요.']},
     {id:'film',n:9,g:'w4',t:'PDLC 필름',sub:'우측 뒷창',where:'2열 우측 뒷창',plane:[2580,3250,1080,1480,-905],
@@ -489,14 +487,14 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     {id:'V-03',f:'pb',to:'air',k:'pwr',n:2,t:'12V 전원',cores:[['12V +','pwr'],['12V −','gnd']],note:'어댑터는 트렁크에 두고 DC선을 연장.',path:'중앙 바닥',p:[[3950,680,-200],[3700,660,-40]].concat(sp('c',-40),[[2300,390,-40],[2250,720,-40],[2150,760,-60]])},
     {id:'V-04',f:'pb',to:'dif',k:'pwr',n:2,t:'5V 전원',cores:[['5V +','pwr'],['5V −','gnd']],note:'전압 강하 주의 · 굵은 선 (AWG18 이상 권장).',path:'중앙 바닥',p:[[3950,680,-220],[3700,660,-60]].concat(sp('c',-60),[[1700,400,-60],[1650,690,-55]])},
     {id:'V-05',f:'enc',to:'sen',k:'sig',n:4,t:'센서선 (꼬임·차폐)',cores:[['3.3V','pwr'],['GND','gnd'],['SDA','sig'],['SCL','sig']],note:'보드 A → 가스센서. 짧게, 꼬임·차폐선으로.',path:'중앙 바닥',p:[gland('V-05')].concat(sp('c',20),[[2300,390,20],[2300,560,0]])},
-    {id:'V-06',f:'enc',to:'uvc',k:'pwr',n:2,t:'12V 전원',cores:[['12V + (R2 경유)','pwr'],['12V −','gnd']],note:'함체 릴레이 R2를 거친 12V.',path:'2열 바닥',p:[gland('V-06'),[3360,660,150],[3360,390,-150],[2700,390,-380],[2390,410,-390]]},
+    {id:'V-06',f:'enc',to:'uvc',k:'pwr',n:2,t:'12V 전원',cores:[['12V + (릴레이 1번 채널 경유)','pwr'],['12V −','gnd']],note:'함체 릴레이 1번 채널(보드 B 제어)을 거친 12V.',path:'2열 바닥',p:[gland('V-06'),[3360,660,150],[3360,390,-150],[2700,390,-380],[2390,410,-390]]},
     {id:'V-07',f:'pdc',to:'film',k:'pwr',n:2,t:'필름 구동선',cores:[['구동 출력 1','pwr'],['구동 출력 2','pwr']],note:'제어기 출력 사양 확인 후 절연·굵기 결정.',path:'우측 사이드실',p:[[3500,670,-520]].concat(sp('r',0),[[2560,900,-860],[2590,1080,-900]])},
     {id:'V-08',f:'enc',to:'led',k:'sig',n:2,t:'LED 신호선',cores:[['데이터','sig'],['GND','gnd']],note:'보드 C → LED 스트랩. 데이터와 GND를 함께.',path:'우측 사이드실',p:[gland('V-08'),[3420,660,-300],[3380,660,-680]].concat(sp('r',20),[[2560,880,-850],[2590,1100,-890]])},
     {id:'V-09',f:'pb',to:'led',k:'tbd',n:2,t:'5V 전원 (방식 협의)',cores:[['5V +','pwr'],['5V −','gnd']],note:'전용 전원장치 또는 USB-C 확정 후.',path:'우측 사이드실',p:[[3950,680,-520],[3600,660,-690]].concat(sp('r',40),[[2560,860,-840],[2590,1120,-888]])},
     {id:'V-10',f:'enc',to:'rear',k:'tbd',n:0,t:'협의 중',cores:[],note:'센서 모델 확정 후.',path:'트렁크',p:[gland('V-10'),[3440,650,150],[3700,650,0],[4450,660,0],[4600,640,-450],[4690,520,-550]]},
-    {id:'T-1',f:'pc',to:'enc',k:'usb',n:3,u:'개',t:'USB 케이블',cores:[['USB 케이블 3개','hub']],note:'미니 PC → 함체 왼쪽 옆면 USB 입구 → 허브.',path:'트렁크 안',p:[[3900,670,500],[3750,690,500],[3640,690,505]]},
-    {id:'T-2',f:'pb',to:'enc',k:'pwr',n:2,t:'12V 입력 (UVC용)',cores:[['12V +','pwr'],['12V −','gnd']],note:'파워뱅크 12V → 함체 단자대 → R2.',path:'트렁크 안',p:[[3950,680,-150],[3700,670,0],[3480,670,250]]},
-    {id:'T-3',f:'enc',to:'pdc',k:'sig',n:2,t:'PDLC 제어 신호',cores:[['흰선 (T/C 신호)','sig'],['검정 (GND)','gnd']],note:'함체 R1 → PDLC 제어기 T/C 단자.',path:'트렁크 안',p:[gland('T-3'),[3470,670,0],[3560,670,-400]]},
+    {id:'T-1',f:'pc',to:'enc',k:'usb',n:3,u:'개',t:'USB 케이블',cores:[['보드 A ← 미니 PC USB-A (A-C)','hub'],['보드 B ← 미니 PC USB-C (C-C)','hub'],['보드 C ← 미니 PC USB-C (C-C)','hub']],note:'미니 PC → 함체 왼쪽 옆면 입구 → 각 보드 USB-C. USB 허브 없이 직접 연결.',path:'트렁크 안',p:[[3900,670,500],[3750,690,500],[3640,690,505]]},
+    {id:'T-2',f:'pb',to:'enc',k:'pwr',n:2,t:'12V 입력 (UVC용)',cores:[['12V +','pwr'],['12V −','gnd']],note:'파워뱅크 12V → 함체 단자대 → 릴레이 1번 채널.',path:'트렁크 안',p:[[3950,680,-150],[3700,670,0],[3480,670,250]]},
+    {id:'T-3',f:'enc',to:'pdc',k:'sig',n:2,t:'PDLC 제어 신호',cores:[['흰선 (T/C 신호)','sig'],['검정 (GND)','gnd']],note:'함체 릴레이 2번 채널(보드 B 제어) → PDLC 제어기 T/C 단자.',path:'트렁크 안',p:[gland('T-3'),[3470,670,0],[3560,670,-400]]},
     {id:'T-4',f:'pb',to:'pdc',k:'pwr',n:1,u:'개',t:'12V 어댑터',cores:[['PDLC 제어기 전용 어댑터','pwr']],note:'파워뱅크 AC 출력 → 제어기 어댑터.',path:'트렁크 안',p:[[3950,680,-450],[3650,670,-520]]},
     {id:'T-5',f:'pb',to:'pc',k:'pwr',n:1,u:'개',t:'미니 PC 어댑터',cores:[['미니 PC 전원 어댑터','pwr']],note:'파워뱅크 → 미니 PC.',path:'트렁크 안',p:[[4100,680,-80],[4025,680,380]]}
   ];
@@ -658,12 +656,12 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
         o+='<text class="e-lab2" x="'+(x+w/2)+'" y="'+(y+h-14)+'" text-anchor="middle">USB ↓</text>';
       } else {
         o+='<text class="e-lab" x="'+(x+w/2)+'" y="'+(y+h/2+(it.s?-3:4))+'" text-anchor="middle" style="'+(it.k==='tb'?'fill:#16202A':'')+'">'+it.t+'</text>';
-        if(it.s) o+='<text class="e-lab2" x="'+(x+w/2)+'" y="'+(y+h/2+11)+'" text-anchor="middle">'+(it.k==='relay'?'2ch':it.s)+'</text>';
+        if(it.s) o+='<text class="e-lab2" x="'+(x+w/2)+'" y="'+(y+h/2+11)+'" text-anchor="middle">'+it.s+'</text>';
       }
     });
     // USB 입구 (왼쪽 옆면)
     var uy=oy+(ENC.D-140)*s;
-    o+='<rect x="'+(ox-8)+'" y="'+(uy-8)+'" width="14" height="16" rx="3" class="e-gl"/><text class="e-glt" x="'+(ox-14)+'" y="'+(uy+4)+'" text-anchor="end">T-1 USB</text>';
+    o+='<rect x="'+(ox-8)+'" y="'+(uy-8)+'" width="14" height="16" rx="3" class="e-gl"/><text class="e-glt" x="'+(ox-14)+'" y="'+(uy+4)+'" text-anchor="end">T-1 USB ×3</text>';
     // 앞면 글랜드 표시 (위 그림)
     ENC.glands.forEach(function(g){var x=ox+g[1]*s;o+='<circle class="e-gl" cx="'+x+'" cy="'+(oy+D)+'" r="6"/>';});
     o+='<text class="e-note" x="'+(ox+W/2)+'" y="'+(oy+D+26)+'" text-anchor="middle">▼ 앞면 (실내 쪽) · 글랜드 8개</text>';
@@ -712,12 +710,9 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
   var TERM={L:['GND','GND','19','20','21','47','48','45','0','35','36','37','38','39','40','41','42','2','1','RX','TX','G'],
             R:['G','5V','14','13','12','11','10','9','46','3','8','18','17','16','15','7','6','5','4','RST','3.3','3.3']};
   var TK={p5:['#E03131','5V 전원'],g:['#2B2F33','GND'],p33:['#F08C00','3.3V 전원'],s:['#1C7ED6','신호'],i2c:['#0C9284','I2C'],x:['#8794A1','예비']};
-  // [단자 열, 위에서 몇 번째(0부터), 선 종류, 연결 대상, 배선 번호, 끝점(3D): R1/R2 핀 또는 글랜드]
+  // [단자 열, 위에서 몇 번째(0부터), 선 종류, 연결 대상, 배선 번호, 끝점(3D): 릴레이 핀 또는 글랜드]
   var BWIRE={
-    A:{t:'보드 A',s:'공기청정기·디퓨저 IR · PDLC 릴레이(R1) · SEN66',c:[
-      ['R',1,'p5','R1 릴레이 VCC','함체 안','R1:0'],
-      ['R',0,'g','R1 릴레이 GND','함체 안','R1:1'],
-      ['R',18,'s','R1 릴레이 IN1 (PDLC, LOW=켜짐)','함체 안','R1:2'],
+    A:{t:'보드 A',s:'공기청정기·디퓨저 IR · SEN66',usb:'미니 PC USB-A ↔ 보드 USB-C (A-C 케이블)',c:[
       ['R',17,'s','IR 송신모듈① DAT','V-01 공기청정기','V-01'],
       ['R',15,'s','IR 송신모듈② DAT','V-02 디퓨저','V-02'],
       ['R',16,'x','예비 (비워 둠)','',''],
@@ -728,16 +723,16 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
       ['L',0,'g','IR① GND','V-01 공기청정기','V-01'],
       ['L',1,'g','IR② GND','V-02 디퓨저','V-02'],
       ['L',21,'g','SEN66 GND','V-05 가스센서','V-05']]},
-    B:{t:'보드 B',s:'UVC 릴레이(R2)',c:[
-      ['R',1,'p5','R2 릴레이 VCC','함체 안','R2:0'],
-      ['R',0,'g','R2 릴레이 GND','함체 안','R2:1'],
-      ['R',17,'s','R2 릴레이 IN1 (UVC)','함체 안','R2:2']]},
-    C:{t:'보드 C',s:'LED 스트랩 · 후방센서(미정)',c:[
+    B:{t:'보드 B',s:'2채널 릴레이 1개 (1번 UVC · 2번 PDLC)',usb:'미니 PC USB-C ↔ 보드 USB-C (C-C 케이블)',c:[
+      ['R',1,'p5','릴레이 VCC','함체 안','R:0'],
+      ['R',0,'g','릴레이 GND','함체 안','R:1'],
+      ['R',17,'s','릴레이 IN1 (UVC)','함체 안','R:2'],
+      ['R',18,'s','릴레이 IN2 (PDLC)','함체 안','R:3']]},
+    C:{t:'보드 C',s:'LED 스트랩 · 후방센서(미정)',usb:'미니 PC USB-C ↔ 보드 USB-C (C-C 케이블)',c:[
       ['R',11,'s','LED 데이터','V-08 LED 스트랩','V-08'],
       ['L',0,'g','LED GND','V-08 LED 스트랩','V-08']],note:'후방센서 단자는 모델이 정해지면 추가합니다.'}
   };
-  var RELAYOUT={R1:'R1 출력: COM·NO 1번 채널 → PDLC 제어기 T/C 흰선·검정선 (T-3) · 2번 채널 예비',
-                R2:'R2 출력: COM 1번 ← 12V +(단자대) · NO 1번 → UVC + (V-06) · 2번 채널 예비'};
+  var RELAYOUT='릴레이 출력: 1번 채널 COM ← 12V +(단자대 T-2) · NO → UVC + (V-06) / 2번 채널 COM·NO → PDLC 제어기 T/C 흰선·검정선 (T-3)';
   function boardSVG(id){
     var bw=BWIRE[id], X0=330, X1=590, Y0=16, Y1=640, pitch=(Y1-Y0-70)/21, ty=function(i){return Y0+45+i*pitch;};
     var used={}; bw.c.forEach(function(c){used[c[0]+c[1]]=c;});
@@ -752,7 +747,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     o+='<text x="'+((X0+X1)/2)+'" y="'+(Y0+104)+'" text-anchor="middle" font-size="10" fill="#3a3d42">N16R8</text>';
     o+='<text x="'+((X0+X1)/2)+'" y="'+(Y0+190)+'" text-anchor="middle" font-size="22" font-weight="700" fill="#ffffff">'+bw.t+'</text>';
     [[X0+108,Y1-70],[X0+142,Y1-70]].forEach(function(u){o+='<rect x="'+u[0]+'" y="'+u[1]+'" width="30" height="34" rx="6" fill="#b8bcc2"/>';});
-    o+='<text x="'+((X0+X1)/2)+'" y="'+(Y1-14)+'" text-anchor="middle" font-size="10" fill="#9aa0a6">USB-C (미니 PC 허브 연결)</text>';
+    o+='<text x="'+((X0+X1)/2)+'" y="'+(Y1-14)+'" text-anchor="middle" font-size="10" fill="#9aa0a6">USB-C → 미니 PC</text>';
     ['L','R'].forEach(function(side){
       var tx=side==='L'?X0-22:X1-12;
       o+='<rect x="'+tx+'" y="'+(Y0+30)+'" width="34" height="'+(pitch*22)+'" rx="4" fill="#2fae66"/>';
@@ -789,8 +784,8 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     var body=root.querySelector('.bp-body');
     function show(id){
       root.querySelectorAll('.bp-btn').forEach(function(b){b.setAttribute('aria-selected',b.getAttribute('data-board')===id?'true':'false');});
-      var bw=BWIRE[id], rel=id==='A'?RELAYOUT.R1:id==='B'?RELAYOUT.R2:'';
-      body.innerHTML='<p class="bp-sub">'+bw.s+' · 사진처럼 <b>안테나가 위, USB-C가 아래</b>로 놓고 위에서부터 셉니다.</p>'+
+      var bw=BWIRE[id], rel=id==='B'?RELAYOUT:'';
+      body.innerHTML='<p class="bp-sub"><b>'+bw.usb+'</b> · '+bw.s+' · 사진처럼 <b>안테나가 위, USB-C가 아래</b>로 놓고 위에서부터 셉니다.</p>'+
         '<div class="bp-scroll"><div style="min-width:640px">'+boardSVG(id)+'</div></div>'+
         '<div class="bp-key">'+['p5','g','p33','s','i2c','x'].map(function(k){return '<span><i style="background:'+TK[k][0]+'"></i>'+TK[k][1]+'</span>';}).join('')+'</div>'+
         (rel?'<p class="bp-rel">'+rel+'</p>':'')+(bw.note?'<p class="bp-sub">'+bw.note+'</p>':'')+
@@ -800,7 +795,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     show(root.getAttribute('data-start')||'A');
   }
 
-  /* 3D: 함체 내부 (보드·릴레이·허브·단자대 + 단자별 배선) — H = 3D 도우미 묶음 */
+  /* 3D: 함체 내부 (보드·릴레이·단자대 + 단자별 배선) — H = 3D 도우미 묶음 */
   function encInterior(E,H,put,lab){
     var T=H.T, M=H.M, B=H.B, C=H.C, y=E.y0+8, IT={};
     E.items.forEach(function(it){IT[it.id]=it;});
@@ -826,9 +821,16 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
       var bg=it.k==='relay'?'#1f5fa8':it.k==='pcb'?'#0E8576':it.k==='hub'?'#4B5563':'#B7791F';
       var s=H.sprite(H.tex(it.t,'#ffffff',bg),.024);s.position.set(mx,E.y0+E.H+25,mz);lab(s);
     });
+    // 미니 PC USB 3개: 왼쪽 옆면 입구 → 각 보드 USB-C
+    ['A','B','C'].forEach(function(bid,i){
+      var it=IT[bid]; if(!it) return;
+      var inl=xz(0,150-i*12), u=xz((it.u[0]+it.u[1])/2,it.v[0]+4), lane=y+40+i*4;
+      var pts=[[inl[0],y+14,inl[1]+6],[inl[0],lane,inl[1]-10],[u[0]-14,lane,u[1]],[u[0],y+8,u[1]]];
+      put(new T.Mesh(new T.TubeGeometry(H.fillet(pts,10),40,2.6,8,false),M(0x2b2f33,.5)),0,0,0);
+    });
     // 단자별 배선
     function term(it,side,i){var tv=it.v[1]-6-i*(it.v[1]-it.v[0]-12)/21,u=side==='L'?it.u[0]+5:it.u[1]-5,p=xz(u,tv);return [p[0],y+15,p[1]];}
-    function relayPin(r,k){var it=IT[r],u=it.u[0]+10+k*12,p=xz(u,it.v[1]-4);return [p[0],y+12,p[1]];}
+    function relayPin(r,k){var it=IT[r],u=it.u[0]+8+k*11,p=xz(u,it.v[1]-4);return [p[0],y+12,p[1]];}
     function glandPt(id){for(var i=0;i<E.glands.length;i++)if(E.glands[i][0]===id){var p=xz(E.glands[i][1],0);return [p[0]+4,y+10,p[1]];}return null;}
     ['A','B','C'].forEach(function(bid){
       var it=IT[bid]; if(!it) return;
