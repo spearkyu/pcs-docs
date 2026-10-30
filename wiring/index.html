@@ -215,6 +215,17 @@ button,summary,[data-key],[data-zone],[data-term]{-webkit-tap-highlight-color:tr
 .no{width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--surface);font:600 11px/22px var(--f-mono);text-align:center}
 .pi.hl .no{background:var(--accent)}
 @media (max-width:860px){ .vgrid{grid-template-columns:1fr} .vside{max-height:none} }
+
+.bp-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.bp-btn{font:inherit;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:5px 14px;font-size:14px;font-weight:600;min-height:36px;cursor:pointer}
+.bp-btn[aria-selected="true"]{background:var(--ink);color:var(--card,var(--surface));border-color:var(--ink)}
+.bp-body{display:grid;gap:10px;margin-top:10px}
+.bp-scroll{overflow-x:auto}
+.bp-body svg{display:block;width:100%!important;height:auto!important;max-width:900px!important;max-height:none!important;margin:0 auto}
+.bp-sub{font-size:13px;color:var(--mute,var(--muted));margin:0}
+.bp-key{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px}
+.bp-key i{display:inline-block;width:16px;height:5px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.bp-rel{font-size:13.5px;font-weight:600;border-left:4px solid #1f5fa8;padding-left:10px;margin:0}
 /* 상세 카드 */
 .vdet{display:grid;gap:10px;align-content:start;padding:2px 2px 6px}
 .vdet .back{justify-self:start;font:inherit;font-size:12.5px;font-weight:600;border:0;background:none;color:var(--accent);cursor:pointer;padding:2px 0}
@@ -453,6 +464,7 @@ tbody tr[data-key]:hover,tbody tr[data-key]:focus-visible,tbody tr[data-key].hl{
     <h2>보드 A · PCS-IN-01</h2>
     <p class="muted">ESP32-S3-N16R8 + 44P 터미널 어댑터. 작성 펌웨어와 실물 배선 기준으로 확정했습니다. 3.3V와 GND는 보드 안에서 하나로 이어져 있습니다.</p>
   </div>
+  <div class="card" style="margin-bottom:12px"><div class="ch"><h3>단자대 배선 위치 · 실물 어댑터 기준</h3><span class="muted" style="font-size:12px">안테나 위 · USB-C 아래</span></div><div class="bp" data-start="A"></div></div>
   <div class="cards">
     <div class="card">
       <div class="ch"><h3>IR 송신 · 공기청정기·디퓨저</h3><span class="pill st-ok">확정</span></div>
@@ -554,6 +566,7 @@ tbody tr[data-key]:hover,tbody tr[data-key]:focus-visible,tbody tr[data-key].hl{
     <h2>보드 B·C</h2>
     <p class="muted">지금까지 받은 정보만 그렸습니다. 점선은 미정입니다.</p>
   </div>
+  <div class="card" style="margin-bottom:12px"><div class="ch"><h3>단자대 배선 위치 · 실물 어댑터 기준</h3><span class="muted" style="font-size:12px">안테나 위 · USB-C 아래</span></div><div class="bp" data-start="B"></div></div>
   <div class="cards">
     <div class="card">
       <div class="ch"><h3>보드 B · UVC</h3><span class="pill st-tbd">일부 미정</span></div>
@@ -1140,6 +1153,152 @@ tbody tr[data-key]:hover,tbody tr[data-key]:focus-visible,tbody tr[data-key].hl{
   plan('plan-wide',function(x,z){return [56+x*.165,210+z*.165];},{s:.165,rx:34,front:'◀ 앞'});
   plan('plan-tall',function(x,z){return [180-z*.12,48+x*.12];},{s:.12,rx:26,front:'▲ 앞'});
 
+  /* ---------- ESP32-S3 단자 어댑터 배선 (보드 A·B·C) ----------
+     단자 순서: 사진처럼 안테나가 위, USB-C가 아래일 때 위→아래 */
+  var TERM={L:['GND','GND','19','20','21','47','48','45','0','35','36','37','38','39','40','41','42','2','1','RX','TX','G'],
+            R:['G','5V','14','13','12','11','10','9','46','3','8','18','17','16','15','7','6','5','4','RST','3.3','3.3']};
+  var TK={p5:['#E03131','5V 전원'],g:['#2B2F33','GND'],p33:['#F08C00','3.3V 전원'],s:['#1C7ED6','신호'],i2c:['#0C9284','I2C'],x:['#8794A1','예비']};
+  // [단자 열, 위에서 몇 번째(0부터), 선 종류, 연결 대상, 배선 번호, 끝점(3D): R1/R2 핀 또는 글랜드]
+  var BWIRE={
+    A:{t:'보드 A',s:'공기청정기·디퓨저 IR · PDLC 릴레이(R1) · SEN66',c:[
+      ['R',1,'p5','R1 릴레이 VCC','함체 안','R1:0'],
+      ['R',0,'g','R1 릴레이 GND','함체 안','R1:1'],
+      ['R',18,'s','R1 릴레이 IN1 (PDLC, LOW=켜짐)','함체 안','R1:2'],
+      ['R',17,'s','IR 송신모듈① DAT','V-01 공기청정기','V-01'],
+      ['R',15,'s','IR 송신모듈② DAT','V-02 디퓨저','V-02'],
+      ['R',16,'x','예비 (비워 둠)','',''],
+      ['R',10,'i2c','SEN66 SDA','V-05 가스센서','V-05'],
+      ['R',7,'i2c','SEN66 SCL','V-05 가스센서','V-05'],
+      ['R',20,'p33','IR①·IR② VCC (2가닥 같이)','V-01 · V-02','V-01'],
+      ['R',21,'p33','SEN66 VDD','V-05 가스센서','V-05'],
+      ['L',0,'g','IR① GND','V-01 공기청정기','V-01'],
+      ['L',1,'g','IR② GND','V-02 디퓨저','V-02'],
+      ['L',21,'g','SEN66 GND','V-05 가스센서','V-05']]},
+    B:{t:'보드 B',s:'UVC 릴레이(R2)',c:[
+      ['R',1,'p5','R2 릴레이 VCC','함체 안','R2:0'],
+      ['R',0,'g','R2 릴레이 GND','함체 안','R2:1'],
+      ['R',17,'s','R2 릴레이 IN1 (UVC)','함체 안','R2:2']]},
+    C:{t:'보드 C',s:'LED 스트랩 · 후방센서(미정)',c:[
+      ['R',11,'s','LED 데이터','V-08 LED 스트랩','V-08'],
+      ['L',0,'g','LED GND','V-08 LED 스트랩','V-08']],note:'후방센서 단자는 모델이 정해지면 추가합니다.'}
+  };
+  var RELAYOUT={R1:'R1 출력: COM·NO 1번 채널 → PDLC 제어기 T/C 흰선·검정선 (T-3) · 2번 채널 예비',
+                R2:'R2 출력: COM 1번 ← 12V +(단자대) · NO 1번 → UVC + (V-06) · 2번 채널 예비'};
+  function boardSVG(id){
+    var bw=BWIRE[id], X0=330, X1=590, Y0=16, Y1=640, pitch=(Y1-Y0-70)/21, ty=function(i){return Y0+45+i*pitch;};
+    var used={}; bw.c.forEach(function(c){used[c[0]+c[1]]=c;});
+    var o='<svg viewBox="0 0 920 '+(Y1+16)+'" width="100%" role="img" aria-label="'+bw.t+' 단자대 배선 위치" style="display:block;font-family:\'IBM Plex Sans KR\',sans-serif">';
+    o+='<rect x="'+X0+'" y="'+Y0+'" width="'+(X1-X0)+'" height="'+(Y1-Y0)+'" rx="14" fill="#141414"/>';
+    [[X0+60,Y0+28],[X1-60,Y0+28],[X0+60,Y1-28],[X1-60,Y1-28]].forEach(function(h){o+='<circle cx="'+h[0]+'" cy="'+h[1]+'" r="9" fill="#f2f2f2"/>';});
+    o+='<rect x="'+(X0+70)+'" y="'+(Y0+60)+'" width="12" height="'+(Y1-Y0-150)+'" fill="#050505" stroke="#333"/><rect x="'+(X1-82)+'" y="'+(Y0+60)+'" width="12" height="'+(Y1-Y0-150)+'" fill="#050505" stroke="#333"/>';
+    o+='<rect x="'+(X0+92)+'" y="'+(Y0+18)+'" width="'+(X1-X0-184)+'" height="'+(Y1-Y0-60)+'" rx="6" fill="#1d1d1d"/>';
+    o+='<rect x="'+(X0+100)+'" y="'+(Y0+22)+'" width="'+(X1-X0-200)+'" height="18" fill="#0a0a0a"/>';
+    o+='<rect x="'+(X0+104)+'" y="'+(Y0+42)+'" width="'+(X1-X0-208)+'" height="100" rx="5" fill="#c9ccd0"/>';
+    o+='<text x="'+((X0+X1)/2)+'" y="'+(Y0+86)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#3a3d42">ESP32-S3</text>';
+    o+='<text x="'+((X0+X1)/2)+'" y="'+(Y0+104)+'" text-anchor="middle" font-size="10" fill="#3a3d42">N16R8</text>';
+    o+='<text x="'+((X0+X1)/2)+'" y="'+(Y0+190)+'" text-anchor="middle" font-size="22" font-weight="700" fill="#ffffff">'+bw.t+'</text>';
+    [[X0+108,Y1-70],[X0+142,Y1-70]].forEach(function(u){o+='<rect x="'+u[0]+'" y="'+u[1]+'" width="30" height="34" rx="6" fill="#b8bcc2"/>';});
+    o+='<text x="'+((X0+X1)/2)+'" y="'+(Y1-14)+'" text-anchor="middle" font-size="10" fill="#9aa0a6">USB-C (미니 PC 허브 연결)</text>';
+    ['L','R'].forEach(function(side){
+      var tx=side==='L'?X0-22:X1-12;
+      o+='<rect x="'+tx+'" y="'+(Y0+30)+'" width="34" height="'+(pitch*22)+'" rx="4" fill="#2fae66"/>';
+      TERM[side].forEach(function(nm,i){
+        var y=ty(i), cx=tx+17, u=used[side+i], col=u?TK[u[2]][0]:null;
+        o+='<line x1="'+tx+'" y1="'+(y+pitch/2)+'" x2="'+(tx+34)+'" y2="'+(y+pitch/2)+'" stroke="#1f7a47" stroke-width="1"/>';
+        o+='<circle cx="'+cx+'" cy="'+y+'" r="8" fill="#9ad3b0" stroke="#1f6f45" stroke-width="1.5"/><line x1="'+(cx-5)+'" y1="'+(y-5)+'" x2="'+(cx+5)+'" y2="'+(y+5)+'" stroke="#1f6f45" stroke-width="2"/>';
+        if(u) o+='<circle cx="'+cx+'" cy="'+y+'" r="11" fill="none" stroke="'+col+'" stroke-width="3"/>';
+        var lx=side==='L'?X0+20:X1-20;
+        o+='<text x="'+lx+'" y="'+(y+4)+'" text-anchor="'+(side==='L'?'start':'end')+'" font-size="12" font-weight="'+(u?'700':'400')+'" font-family="IBM Plex Mono,monospace" fill="'+(u?'#ffffff':'#8a8f95')+'">'+nm+'</text>';
+        if(u){
+          var ex=side==='L'?tx:tx+34, gx=side==='L'?ex-36:ex+36, dash=u[2]==='x'?' stroke-dasharray="6 4"':'';
+          o+='<line x1="'+ex+'" y1="'+y+'" x2="'+gx+'" y2="'+y+'" stroke="'+col+'" stroke-width="5" stroke-linecap="round"'+dash+'/>';
+          var t1=u[3], t2=u[4], anc=side==='L'?'end':'start', tx2=side==='L'?gx-8:gx+8;
+          o+='<text x="'+tx2+'" y="'+(y+(t2?-1:4))+'" text-anchor="'+anc+'" font-size="12.5" font-weight="700" fill="var(--ink,#16202A)">'+t1+'</text>';
+          if(t2) o+='<text x="'+tx2+'" y="'+(y+12)+'" text-anchor="'+anc+'" font-size="10.5" fill="var(--mute,var(--muted,#5A6672))">'+t2+'</text>';
+        }
+      });
+    });
+    return o+'</svg>';
+  }
+  function boardTable(id){
+    var bw=BWIRE[id];
+    return '<table><thead><tr><th>단자</th><th>선</th><th>연결 대상</th><th>배선</th></tr></thead><tbody>'+
+      bw.c.map(function(c){return '<tr><td style="font-family:IBM Plex Mono,monospace;font-weight:600">'+(c[0]==='L'?'왼쪽 ':'오른쪽 ')+TERM[c[0]][c[1]]+' <span style="color:var(--mute,var(--muted,#5A6672));font-weight:400">('+(c[1]+1)+'번째)</span></td>'+
+        '<td><span style="display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px;background:'+TK[c[2]][0]+'"></span>'+TK[c[2]][1]+'</td><td>'+c[3]+'</td><td>'+(c[4]||'–')+'</td></tr>';}).join('')+
+      '</tbody></table>';
+  }
+  function boardPanelHTML(){
+    return '<div class="bp-tabs" role="tablist">'+['A','B','C'].map(function(id,i){return '<button type="button" class="bp-btn" role="tab" data-board="'+id+'" aria-selected="'+(i===0)+'">'+BWIRE[id].t+'</button>';}).join('')+'</div>'+
+      '<div class="bp-body"></div>';
+  }
+  function boardPanelMount(root){
+    var body=root.querySelector('.bp-body');
+    function show(id){
+      root.querySelectorAll('.bp-btn').forEach(function(b){b.setAttribute('aria-selected',b.getAttribute('data-board')===id?'true':'false');});
+      var bw=BWIRE[id], rel=id==='A'?RELAYOUT.R1:id==='B'?RELAYOUT.R2:'';
+      body.innerHTML='<p class="bp-sub">'+bw.s+' · 사진처럼 <b>안테나가 위, USB-C가 아래</b>로 놓고 위에서부터 셉니다.</p>'+
+        '<div class="bp-scroll"><div style="min-width:640px">'+boardSVG(id)+'</div></div>'+
+        '<div class="bp-key">'+['p5','g','p33','s','i2c','x'].map(function(k){return '<span><i style="background:'+TK[k][0]+'"></i>'+TK[k][1]+'</span>';}).join('')+'</div>'+
+        (rel?'<p class="bp-rel">'+rel+'</p>':'')+(bw.note?'<p class="bp-sub">'+bw.note+'</p>':'')+
+        '<div class="bp-scroll">'+boardTable(id)+'</div>';
+    }
+    root.querySelectorAll('.bp-btn').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-board'));});});
+    show(root.getAttribute('data-start')||'A');
+  }
+
+  /* 3D: 함체 내부 (보드·릴레이·허브·단자대 + 단자별 배선) — H = 3D 도우미 묶음 */
+  function encInterior(E,H,put,lab){
+    var T=H.T, M=H.M, B=H.B, C=H.C, y=E.y0+8, IT={};
+    E.items.forEach(function(it){IT[it.id]=it;});
+    function xz(u,v){return [E.x0+v,E.z0-u];}
+    put(B(E.D-16,4,E.W-16,M(0x6b6f74,.6,.3)),E.x0+E.D/2,E.y0+4,E.z0-E.W/2);
+    E.items.forEach(function(it){
+      var a=xz(it.u[0],it.v[0]),c=xz(it.u[1],it.v[1]),x0=Math.min(a[0],c[0]),x1=Math.max(a[0],c[0]),z0=Math.min(a[1],c[1]),z1=Math.max(a[1],c[1]),
+        mx=(x0+x1)/2,mz=(z0+z1)/2,ww=x1-x0,dd=z1-z0;
+      if(it.k==='pcb'){
+        put(B(ww,2,dd,M(0x141414,.5)),mx,y+2,mz);
+        put(B(ww*.9,10,7,M(0x2fae66,.5)),mx,y+8,z1-5);put(B(ww*.9,10,7,M(0x2fae66,.5)),mx,y+8,z0+5);
+        for(var t=0;t<22;t++){var tv=it.v[1]-6-t*(it.v[1]-it.v[0]-12)/21,p=xz(0,tv);
+          put(C(2.2,1.5,M(0xc0c4c8,.3,.9),10),p[0],y+13.5,z1-5);put(C(2.2,1.5,M(0xc0c4c8,.3,.9),10),p[0],y+13.5,z0+5);}
+        put(B(ww*.75,3,dd*.55,M(0x1d1d1d,.4)),mx,y+4,mz);
+        put(B(ww*.32,3,dd*.4,M(0xc9ccd0,.3,.9)),x1-ww*.22,y+6,mz);
+        put(B(8,4,10,M(0xb8bcc2,.3,.9)),x0+4,y+6,mz-8);put(B(8,4,10,M(0xb8bcc2,.3,.9)),x0+4,y+6,mz+8);
+      } else if(it.k==='relay'){
+        put(B(ww,2,dd,M(0x1d4fa0,.45)),mx,y+2,mz);
+        put(B(ww*.4,16,dd*.36,M(0x1f5fa8,.4)),mx,y+11,mz-dd*.2);put(B(ww*.4,16,dd*.36,M(0x1f5fa8,.4)),mx,y+11,mz+dd*.2);
+        put(B(6,8,dd*.8,M(0x1d6fb8,.5)),x0+4,y+6,mz);put(B(5,9,dd*.5,M(0x111111,.5)),x1-3,y+6,mz);
+      } else if(it.k==='hub'){put(H.rbox(ww,14,dd,4,M(0x4b5563,.5,.2)),mx,y+7,mz);}
+      else {put(B(ww,12,dd,M(0x151515,.6)),mx,y+6,mz);for(var j=0;j<4;j++)put(C(3,3,M(0xc0c4c8,.3,.9),12),mx,y+13,z0+5+j*(dd-10)/3);}
+      var bg=it.k==='relay'?'#1f5fa8':it.k==='pcb'?'#0E8576':it.k==='hub'?'#4B5563':'#B7791F';
+      var s=H.sprite(H.tex(it.t,'#ffffff',bg),.024);s.position.set(mx,E.y0+E.H+25,mz);lab(s);
+    });
+    // 단자별 배선
+    function term(it,side,i){var tv=it.v[1]-6-i*(it.v[1]-it.v[0]-12)/21,u=side==='L'?it.u[0]+5:it.u[1]-5,p=xz(u,tv);return [p[0],y+15,p[1]];}
+    function relayPin(r,k){var it=IT[r],u=it.u[0]+10+k*12,p=xz(u,it.v[1]-4);return [p[0],y+12,p[1]];}
+    function glandPt(id){for(var i=0;i<E.glands.length;i++)if(E.glands[i][0]===id){var p=xz(E.glands[i][1],0);return [p[0]+4,y+10,p[1]];}return null;}
+    ['A','B','C'].forEach(function(bid){
+      var it=IT[bid]; if(!it) return;
+      BWIRE[bid].c.forEach(function(c,ci){
+        if(!c[5]) return;
+        var a=term(it,c[0],c[1]), dst=c[5].indexOf(':')>0?relayPin(c[5].split(':')[0],+c[5].split(':')[1]):glandPt(c[5]); if(!dst) return;
+        var lane=y+26+(ci%5)*3, pts=[a,[a[0],lane,a[2]],[a[0]-(ci%4)*3-6,lane,dst[2]],[dst[0],lane,dst[2]],dst];
+        var m=new T.Mesh(new T.TubeGeometry(H.fillet(pts,8),48,1.7,6,false),M(new T.Color(TK[c[2]][0]),.45));
+        put(m,0,0,0);
+      });
+    });
+  }
+  var ENCW={x0:3540,z0:600,W:300,D:200,H:160,y0:640,
+    items:[
+      {id:'A',t:'보드 A',s:'ESP32-S3',u:[15,80],v:[95,190],k:'pcb'},
+      {id:'B',t:'보드 B',s:'ESP32-S3',u:[95,160],v:[95,190],k:'pcb'},
+      {id:'C',t:'보드 C',s:'ESP32-S3',u:[175,240],v:[95,190],k:'pcb'},
+      {id:'HUB',t:'USB 허브',s:'',u:[252,287],v:[95,185],k:'hub'},
+      {id:'R1',t:'R1',s:'2ch 릴레이 · PDLC',u:[15,65],v:[18,58],k:'relay'},
+      {id:'R2',t:'R2',s:'2ch 릴레이 · UVC',u:[80,130],v:[18,58],k:'relay'},
+      {id:'TB',t:'12V 단자대',s:'',u:[148,198],v:[25,50],k:'tb'}
+    ],
+    glands:[['V-01',30],['V-02',60],['V-05',90],['V-06',120],['V-08',150],['V-10',180],['T-3',215],['T-2',250]]};
+
   /* 3D (사실적 표현 · 드래그 회전 / 휠 확대 / 우클릭 이동) */
   var V3=null, reduceMotion=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   function css(n){return (getComputedStyle(document.documentElement).getPropertyValue('--'+n)||'').trim()||'#888888';}
@@ -1189,6 +1348,7 @@ tbody tr[data-key]:hover,tbody tr[data-key]:focus-visible,tbody tr[data-key].hl{
     }
     function sprite(t,h){var s=new T.Sprite(new T.SpriteMaterial({map:t,depthTest:false,transparent:true,sizeAttenuation:false}));s.scale.set(h*t.userData.ar,h,1);s.renderOrder=20;scene.add(s);return s;}
 
+    var H={T:T,M:M,B:B,C:C,rbox:rbox,sprite:sprite,tex:tex,fillet:function(p,r){return fillet(p,r);}};
     /* 바닥·조명 */
     scene.add(new T.HemisphereLight(0xffffff,0x8a8a80,.35));
     var dl=new T.DirectionalLight(0xffffff,.75);dl.position.set(200,7000,3200);dl.target.position.set(2400,0,0);scene.add(dl);scene.add(dl.target);
@@ -1289,25 +1449,9 @@ tbody tr[data-key]:hover,tbody tr[data-key]:focus-visible,tbody tr[data-key].hl{
       s.position.set(c.x,bx.max.y+150,c.z); s.userData.key='c:'+p.id; picks.push(s);
       spr[p.id]={s:s,n:tn,h:th};
     });
-    // 함체 안: 보드 A·B·C, 릴레이 R1·R2, USB 허브 (함체 선택 시 보임)
+    // 함체 안: 보드 A·B·C, 릴레이 R1·R2, USB 허브, 12V 단자대와 단자별 배선 (함체 선택 시 보임)
     function innerAdd(m,x,y,z){add(m,x,y,z);inner.push(m);return m;}
-    var ey=652;
-    [['A',545,625],['B',415,495],['C',285,365]].forEach(function(q){
-      var mx=3585,mz=(q[1]+q[2])/2,ww=130,dd=q[2]-q[1];
-      innerAdd(B(ww,2,dd,M(0x151515,.5)),mx,ey,mz);
-      innerAdd(B(ww*.9,9,5,M(0x2e8b57,.5)),mx,ey+5,q[1]+4);innerAdd(B(ww*.9,9,5,M(0x2e8b57,.5)),mx,ey+5,q[2]-4);
-      innerAdd(B(ww*.45,3,dd*.4,M(0x1b1b1b,.4)),mx,ey+3,mz);innerAdd(B(ww*.3,3,dd*.25,M(0xc0c4c8,.3,.9)),mx-ww*.1,ey+5,mz);
-      var l=sprite(tex('보드 '+q[0],'#ffffff','#0E8576'),.024);l.position.set(mx,920,mz);inner.push(l);
-    });
-    [['R1',530,630],['R2',400,500]].forEach(function(q){
-      var mx=3730,mz=(q[1]+q[2])/2,ww=90,dd=q[2]-q[1];
-      innerAdd(B(ww,2,dd,M(0x1d4fa0,.45)),mx,ey,mz);
-      innerAdd(B(ww*.35,18,dd*.4,M(0x1f5fa8,.4)),mx-ww*.18,ey+10,mz);innerAdd(B(ww*.35,18,dd*.4,M(0x1f5fa8,.4)),mx+ww*.18,ey+10,mz);
-      innerAdd(B(5,8,dd*.8,M(0x1d6fb8,.5)),mx+ww/2-4,ey+5,mz);
-      var l=sprite(tex(q[0]+' 릴레이','#ffffff','#1f5fa8'),.024);l.position.set(mx,920,mz);inner.push(l);
-    });
-    innerAdd(rbox(90,14,70,4,M(0x4b5563,.5,.2)),3730,ey+7,320);
-    (function(){var l=sprite(tex('USB 허브','#ffffff','#4B5563'),.024);l.position.set(3730,880,320);inner.push(l);})();
+    encInterior(ENCW,H,innerAdd,function(sp){inner.push(sp);});
     inner.forEach(function(o){o.visible=false;o.userData.key='c:enc';});
 
     /* 배선 */
@@ -1359,7 +1503,7 @@ tbody tr[data-key]:hover,tbody tr[data-key]:focus-visible,tbody tr[data-key].hl{
       if(!k) return;
       var id=k.slice(2);
       if(k.charAt(0)==='c'){var g=groups[id];if(!g)return;
-        if(id==='enc'){var c=new T.Box3().setFromObject(g).getCenter(new T.Vector3());pressed(null);fly([c.x+560,c.y+1100,c.z-600],[c.x,c.y,c.z]);return;}
+        if(id==='enc'){var c=new T.Box3().setFromObject(g).getCenter(new T.Vector3());pressed(null);fly([c.x+250,c.y+600,c.z-280],[c.x,c.y,c.z]);return;}
         focusObj(g,id==='film'||id==='led'?1800:1300);return;}
       if(rmesh[id]) focusObj(rmesh[id],1500);
     }
@@ -1407,6 +1551,7 @@ tbody tr[data-key]:hover,tbody tr[data-key]:focus-visible,tbody tr[data-key].hl{
     (function loop(){requestAnimationFrame(loop);if(!stage.offsetParent)return;tween();ctl.update();if(helper.visible&&helperObj)helper.setFromObject(helperObj);ren.render(scene,cam);})();
   }
 
+  document.querySelectorAll('.bp').forEach(function(bp){bp.innerHTML=boardPanelHTML();boardPanelMount(bp);});
   var h=(location.hash||'').slice(1);
   select(TABS.indexOf(h)>=0?h:'board-a',false);
 })();

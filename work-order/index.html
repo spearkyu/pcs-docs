@@ -211,6 +211,17 @@ th{font-size:12px;color:var(--mute);font-weight:600;white-space:nowrap}
 .reset{font-size:13px;color:var(--mute);background:none;border:1px solid var(--line);border-radius:8px;padding:6px 10px}
 footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-size:13px;color:var(--mute);display:grid;gap:4px}
 
+
+.bp-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.bp-btn{font:inherit;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:5px 14px;font-size:14px;font-weight:600;min-height:36px;cursor:pointer}
+.bp-btn[aria-selected="true"]{background:var(--ink);color:var(--card,var(--surface));border-color:var(--ink)}
+.bp-body{display:grid;gap:10px;margin-top:10px}
+.bp-scroll{overflow-x:auto}
+.bp-body svg{display:block;width:100%!important;height:auto!important;max-width:900px!important;max-height:none!important;margin:0 auto}
+.bp-sub{font-size:13px;color:var(--mute,var(--muted));margin:0}
+.bp-key{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px}
+.bp-key i{display:inline-block;width:16px;height:5px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.bp-rel{font-size:13.5px;font-weight:600;border-left:4px solid #1f5fa8;padding-left:10px;margin:0}
 @media (max-width:820px){ .d-cols,.team{grid-template-columns:1fr} }
 @media (max-width:560px){
   .stagebox{padding:8px;border-radius:12px}
@@ -229,7 +240,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
 
 <header class="top wrap">
   <div class="t">
-    <div class="eyebrow">작업지시서 · v0.5 · 2026-10-30</div>
+    <div class="eyebrow">작업지시서 · v0.6 · 2026-10-30</div>
     <h1>PCS 차량 작업지시서</h1>
   </div>
   <div class="meta">
@@ -298,6 +309,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
 <template id="tpl-enc">
   <div class="subtabs" role="tablist">
     <button type="button" class="sbtn" role="tab" data-sub="e-a">함체 모형 (참고 도면)</button>
+    <button type="button" class="sbtn" role="tab" data-sub="e-d">보드 단자 배선</button>
     <button type="button" class="sbtn" role="tab" data-sub="e-b">제작 요청</button>
     <button type="button" class="sbtn" role="tab" data-sub="e-c">들어가는 부품</button>
   </div>
@@ -305,6 +317,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     <div class="scroll"><div id="enc-svg" style="min-width:520px"></div></div>
     <small class="mute">치수는 참고용입니다. 보드·릴레이 실물을 놓아 보고 함께 확정합니다. 3D에서 함체를 누르면 내부 배치가 보입니다.</small>
   </div>
+  <div class="sub" data-subp="e-d" hidden><div class="bp" data-start="A"></div></div>
   <div class="sub" data-subp="e-b" hidden>
     <p class="big-note" style="--c:var(--ours)">고급스러운 마감과 사용 편의성을 최대한 고려해 제작해 주세요.</p>
     <div class="req">
@@ -597,7 +610,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
       (p.warn.length?'<div class="warn"><b>⚠ 주의</b>'+listHTML(p.warn)+'</div>':'')+'</div></div>'+
       (p.tpl?'<div class="fig" id="tplhost"></div>':'')+'</div>';
     d.innerHTML=h;
-    if(p.tpl){mountTpl(p.tpl); if(p.id==='enc') $('#enc-svg').innerHTML=encSVG();}
+    if(p.tpl){mountTpl(p.tpl); if(p.id==='enc'){$('#enc-svg').innerHTML=encSVG(); var bp=$('.bp',d); bp.innerHTML=boardPanelHTML(); boardPanelMount(bp);}}
     bindChecks(d);
   }
   function mountTpl(id){
@@ -694,6 +707,141 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     $('#fb2d').innerHTML=s+'</svg>';
   }
 
+  /* ---------- ESP32-S3 단자 어댑터 배선 (보드 A·B·C) ----------
+     단자 순서: 사진처럼 안테나가 위, USB-C가 아래일 때 위→아래 */
+  var TERM={L:['GND','GND','19','20','21','47','48','45','0','35','36','37','38','39','40','41','42','2','1','RX','TX','G'],
+            R:['G','5V','14','13','12','11','10','9','46','3','8','18','17','16','15','7','6','5','4','RST','3.3','3.3']};
+  var TK={p5:['#E03131','5V 전원'],g:['#2B2F33','GND'],p33:['#F08C00','3.3V 전원'],s:['#1C7ED6','신호'],i2c:['#0C9284','I2C'],x:['#8794A1','예비']};
+  // [단자 열, 위에서 몇 번째(0부터), 선 종류, 연결 대상, 배선 번호, 끝점(3D): R1/R2 핀 또는 글랜드]
+  var BWIRE={
+    A:{t:'보드 A',s:'공기청정기·디퓨저 IR · PDLC 릴레이(R1) · SEN66',c:[
+      ['R',1,'p5','R1 릴레이 VCC','함체 안','R1:0'],
+      ['R',0,'g','R1 릴레이 GND','함체 안','R1:1'],
+      ['R',18,'s','R1 릴레이 IN1 (PDLC, LOW=켜짐)','함체 안','R1:2'],
+      ['R',17,'s','IR 송신모듈① DAT','V-01 공기청정기','V-01'],
+      ['R',15,'s','IR 송신모듈② DAT','V-02 디퓨저','V-02'],
+      ['R',16,'x','예비 (비워 둠)','',''],
+      ['R',10,'i2c','SEN66 SDA','V-05 가스센서','V-05'],
+      ['R',7,'i2c','SEN66 SCL','V-05 가스센서','V-05'],
+      ['R',20,'p33','IR①·IR② VCC (2가닥 같이)','V-01 · V-02','V-01'],
+      ['R',21,'p33','SEN66 VDD','V-05 가스센서','V-05'],
+      ['L',0,'g','IR① GND','V-01 공기청정기','V-01'],
+      ['L',1,'g','IR② GND','V-02 디퓨저','V-02'],
+      ['L',21,'g','SEN66 GND','V-05 가스센서','V-05']]},
+    B:{t:'보드 B',s:'UVC 릴레이(R2)',c:[
+      ['R',1,'p5','R2 릴레이 VCC','함체 안','R2:0'],
+      ['R',0,'g','R2 릴레이 GND','함체 안','R2:1'],
+      ['R',17,'s','R2 릴레이 IN1 (UVC)','함체 안','R2:2']]},
+    C:{t:'보드 C',s:'LED 스트랩 · 후방센서(미정)',c:[
+      ['R',11,'s','LED 데이터','V-08 LED 스트랩','V-08'],
+      ['L',0,'g','LED GND','V-08 LED 스트랩','V-08']],note:'후방센서 단자는 모델이 정해지면 추가합니다.'}
+  };
+  var RELAYOUT={R1:'R1 출력: COM·NO 1번 채널 → PDLC 제어기 T/C 흰선·검정선 (T-3) · 2번 채널 예비',
+                R2:'R2 출력: COM 1번 ← 12V +(단자대) · NO 1번 → UVC + (V-06) · 2번 채널 예비'};
+  function boardSVG(id){
+    var bw=BWIRE[id], X0=330, X1=590, Y0=16, Y1=640, pitch=(Y1-Y0-70)/21, ty=function(i){return Y0+45+i*pitch;};
+    var used={}; bw.c.forEach(function(c){used[c[0]+c[1]]=c;});
+    var o='<svg viewBox="0 0 920 '+(Y1+16)+'" width="100%" role="img" aria-label="'+bw.t+' 단자대 배선 위치" style="display:block;font-family:\'IBM Plex Sans KR\',sans-serif">';
+    o+='<rect x="'+X0+'" y="'+Y0+'" width="'+(X1-X0)+'" height="'+(Y1-Y0)+'" rx="14" fill="#141414"/>';
+    [[X0+60,Y0+28],[X1-60,Y0+28],[X0+60,Y1-28],[X1-60,Y1-28]].forEach(function(h){o+='<circle cx="'+h[0]+'" cy="'+h[1]+'" r="9" fill="#f2f2f2"/>';});
+    o+='<rect x="'+(X0+70)+'" y="'+(Y0+60)+'" width="12" height="'+(Y1-Y0-150)+'" fill="#050505" stroke="#333"/><rect x="'+(X1-82)+'" y="'+(Y0+60)+'" width="12" height="'+(Y1-Y0-150)+'" fill="#050505" stroke="#333"/>';
+    o+='<rect x="'+(X0+92)+'" y="'+(Y0+18)+'" width="'+(X1-X0-184)+'" height="'+(Y1-Y0-60)+'" rx="6" fill="#1d1d1d"/>';
+    o+='<rect x="'+(X0+100)+'" y="'+(Y0+22)+'" width="'+(X1-X0-200)+'" height="18" fill="#0a0a0a"/>';
+    o+='<rect x="'+(X0+104)+'" y="'+(Y0+42)+'" width="'+(X1-X0-208)+'" height="100" rx="5" fill="#c9ccd0"/>';
+    o+='<text x="'+((X0+X1)/2)+'" y="'+(Y0+86)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#3a3d42">ESP32-S3</text>';
+    o+='<text x="'+((X0+X1)/2)+'" y="'+(Y0+104)+'" text-anchor="middle" font-size="10" fill="#3a3d42">N16R8</text>';
+    o+='<text x="'+((X0+X1)/2)+'" y="'+(Y0+190)+'" text-anchor="middle" font-size="22" font-weight="700" fill="#ffffff">'+bw.t+'</text>';
+    [[X0+108,Y1-70],[X0+142,Y1-70]].forEach(function(u){o+='<rect x="'+u[0]+'" y="'+u[1]+'" width="30" height="34" rx="6" fill="#b8bcc2"/>';});
+    o+='<text x="'+((X0+X1)/2)+'" y="'+(Y1-14)+'" text-anchor="middle" font-size="10" fill="#9aa0a6">USB-C (미니 PC 허브 연결)</text>';
+    ['L','R'].forEach(function(side){
+      var tx=side==='L'?X0-22:X1-12;
+      o+='<rect x="'+tx+'" y="'+(Y0+30)+'" width="34" height="'+(pitch*22)+'" rx="4" fill="#2fae66"/>';
+      TERM[side].forEach(function(nm,i){
+        var y=ty(i), cx=tx+17, u=used[side+i], col=u?TK[u[2]][0]:null;
+        o+='<line x1="'+tx+'" y1="'+(y+pitch/2)+'" x2="'+(tx+34)+'" y2="'+(y+pitch/2)+'" stroke="#1f7a47" stroke-width="1"/>';
+        o+='<circle cx="'+cx+'" cy="'+y+'" r="8" fill="#9ad3b0" stroke="#1f6f45" stroke-width="1.5"/><line x1="'+(cx-5)+'" y1="'+(y-5)+'" x2="'+(cx+5)+'" y2="'+(y+5)+'" stroke="#1f6f45" stroke-width="2"/>';
+        if(u) o+='<circle cx="'+cx+'" cy="'+y+'" r="11" fill="none" stroke="'+col+'" stroke-width="3"/>';
+        var lx=side==='L'?X0+20:X1-20;
+        o+='<text x="'+lx+'" y="'+(y+4)+'" text-anchor="'+(side==='L'?'start':'end')+'" font-size="12" font-weight="'+(u?'700':'400')+'" font-family="IBM Plex Mono,monospace" fill="'+(u?'#ffffff':'#8a8f95')+'">'+nm+'</text>';
+        if(u){
+          var ex=side==='L'?tx:tx+34, gx=side==='L'?ex-36:ex+36, dash=u[2]==='x'?' stroke-dasharray="6 4"':'';
+          o+='<line x1="'+ex+'" y1="'+y+'" x2="'+gx+'" y2="'+y+'" stroke="'+col+'" stroke-width="5" stroke-linecap="round"'+dash+'/>';
+          var t1=u[3], t2=u[4], anc=side==='L'?'end':'start', tx2=side==='L'?gx-8:gx+8;
+          o+='<text x="'+tx2+'" y="'+(y+(t2?-1:4))+'" text-anchor="'+anc+'" font-size="12.5" font-weight="700" fill="var(--ink,#16202A)">'+t1+'</text>';
+          if(t2) o+='<text x="'+tx2+'" y="'+(y+12)+'" text-anchor="'+anc+'" font-size="10.5" fill="var(--mute,var(--muted,#5A6672))">'+t2+'</text>';
+        }
+      });
+    });
+    return o+'</svg>';
+  }
+  function boardTable(id){
+    var bw=BWIRE[id];
+    return '<table><thead><tr><th>단자</th><th>선</th><th>연결 대상</th><th>배선</th></tr></thead><tbody>'+
+      bw.c.map(function(c){return '<tr><td style="font-family:IBM Plex Mono,monospace;font-weight:600">'+(c[0]==='L'?'왼쪽 ':'오른쪽 ')+TERM[c[0]][c[1]]+' <span style="color:var(--mute,var(--muted,#5A6672));font-weight:400">('+(c[1]+1)+'번째)</span></td>'+
+        '<td><span style="display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px;background:'+TK[c[2]][0]+'"></span>'+TK[c[2]][1]+'</td><td>'+c[3]+'</td><td>'+(c[4]||'–')+'</td></tr>';}).join('')+
+      '</tbody></table>';
+  }
+  function boardPanelHTML(){
+    return '<div class="bp-tabs" role="tablist">'+['A','B','C'].map(function(id,i){return '<button type="button" class="bp-btn" role="tab" data-board="'+id+'" aria-selected="'+(i===0)+'">'+BWIRE[id].t+'</button>';}).join('')+'</div>'+
+      '<div class="bp-body"></div>';
+  }
+  function boardPanelMount(root){
+    var body=root.querySelector('.bp-body');
+    function show(id){
+      root.querySelectorAll('.bp-btn').forEach(function(b){b.setAttribute('aria-selected',b.getAttribute('data-board')===id?'true':'false');});
+      var bw=BWIRE[id], rel=id==='A'?RELAYOUT.R1:id==='B'?RELAYOUT.R2:'';
+      body.innerHTML='<p class="bp-sub">'+bw.s+' · 사진처럼 <b>안테나가 위, USB-C가 아래</b>로 놓고 위에서부터 셉니다.</p>'+
+        '<div class="bp-scroll"><div style="min-width:640px">'+boardSVG(id)+'</div></div>'+
+        '<div class="bp-key">'+['p5','g','p33','s','i2c','x'].map(function(k){return '<span><i style="background:'+TK[k][0]+'"></i>'+TK[k][1]+'</span>';}).join('')+'</div>'+
+        (rel?'<p class="bp-rel">'+rel+'</p>':'')+(bw.note?'<p class="bp-sub">'+bw.note+'</p>':'')+
+        '<div class="bp-scroll">'+boardTable(id)+'</div>';
+    }
+    root.querySelectorAll('.bp-btn').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-board'));});});
+    show(root.getAttribute('data-start')||'A');
+  }
+
+  /* 3D: 함체 내부 (보드·릴레이·허브·단자대 + 단자별 배선) — H = 3D 도우미 묶음 */
+  function encInterior(E,H,put,lab){
+    var T=H.T, M=H.M, B=H.B, C=H.C, y=E.y0+8, IT={};
+    E.items.forEach(function(it){IT[it.id]=it;});
+    function xz(u,v){return [E.x0+v,E.z0-u];}
+    put(B(E.D-16,4,E.W-16,M(0x6b6f74,.6,.3)),E.x0+E.D/2,E.y0+4,E.z0-E.W/2);
+    E.items.forEach(function(it){
+      var a=xz(it.u[0],it.v[0]),c=xz(it.u[1],it.v[1]),x0=Math.min(a[0],c[0]),x1=Math.max(a[0],c[0]),z0=Math.min(a[1],c[1]),z1=Math.max(a[1],c[1]),
+        mx=(x0+x1)/2,mz=(z0+z1)/2,ww=x1-x0,dd=z1-z0;
+      if(it.k==='pcb'){
+        put(B(ww,2,dd,M(0x141414,.5)),mx,y+2,mz);
+        put(B(ww*.9,10,7,M(0x2fae66,.5)),mx,y+8,z1-5);put(B(ww*.9,10,7,M(0x2fae66,.5)),mx,y+8,z0+5);
+        for(var t=0;t<22;t++){var tv=it.v[1]-6-t*(it.v[1]-it.v[0]-12)/21,p=xz(0,tv);
+          put(C(2.2,1.5,M(0xc0c4c8,.3,.9),10),p[0],y+13.5,z1-5);put(C(2.2,1.5,M(0xc0c4c8,.3,.9),10),p[0],y+13.5,z0+5);}
+        put(B(ww*.75,3,dd*.55,M(0x1d1d1d,.4)),mx,y+4,mz);
+        put(B(ww*.32,3,dd*.4,M(0xc9ccd0,.3,.9)),x1-ww*.22,y+6,mz);
+        put(B(8,4,10,M(0xb8bcc2,.3,.9)),x0+4,y+6,mz-8);put(B(8,4,10,M(0xb8bcc2,.3,.9)),x0+4,y+6,mz+8);
+      } else if(it.k==='relay'){
+        put(B(ww,2,dd,M(0x1d4fa0,.45)),mx,y+2,mz);
+        put(B(ww*.4,16,dd*.36,M(0x1f5fa8,.4)),mx,y+11,mz-dd*.2);put(B(ww*.4,16,dd*.36,M(0x1f5fa8,.4)),mx,y+11,mz+dd*.2);
+        put(B(6,8,dd*.8,M(0x1d6fb8,.5)),x0+4,y+6,mz);put(B(5,9,dd*.5,M(0x111111,.5)),x1-3,y+6,mz);
+      } else if(it.k==='hub'){put(H.rbox(ww,14,dd,4,M(0x4b5563,.5,.2)),mx,y+7,mz);}
+      else {put(B(ww,12,dd,M(0x151515,.6)),mx,y+6,mz);for(var j=0;j<4;j++)put(C(3,3,M(0xc0c4c8,.3,.9),12),mx,y+13,z0+5+j*(dd-10)/3);}
+      var bg=it.k==='relay'?'#1f5fa8':it.k==='pcb'?'#0E8576':it.k==='hub'?'#4B5563':'#B7791F';
+      var s=H.sprite(H.tex(it.t,'#ffffff',bg),.024);s.position.set(mx,E.y0+E.H+25,mz);lab(s);
+    });
+    // 단자별 배선
+    function term(it,side,i){var tv=it.v[1]-6-i*(it.v[1]-it.v[0]-12)/21,u=side==='L'?it.u[0]+5:it.u[1]-5,p=xz(u,tv);return [p[0],y+15,p[1]];}
+    function relayPin(r,k){var it=IT[r],u=it.u[0]+10+k*12,p=xz(u,it.v[1]-4);return [p[0],y+12,p[1]];}
+    function glandPt(id){for(var i=0;i<E.glands.length;i++)if(E.glands[i][0]===id){var p=xz(E.glands[i][1],0);return [p[0]+4,y+10,p[1]];}return null;}
+    ['A','B','C'].forEach(function(bid){
+      var it=IT[bid]; if(!it) return;
+      BWIRE[bid].c.forEach(function(c,ci){
+        if(!c[5]) return;
+        var a=term(it,c[0],c[1]), dst=c[5].indexOf(':')>0?relayPin(c[5].split(':')[0],+c[5].split(':')[1]):glandPt(c[5]); if(!dst) return;
+        var lane=y+26+(ci%5)*3, pts=[a,[a[0],lane,a[2]],[a[0]-(ci%4)*3-6,lane,dst[2]],[dst[0],lane,dst[2]],dst];
+        var m=new T.Mesh(new T.TubeGeometry(H.fillet(pts,8),48,1.7,6,false),M(new T.Color(TK[c[2]][0]),.45));
+        put(m,0,0,0);
+      });
+    });
+  }
+
   /* ---------- 3D (사실적 표현 · 드래그 회전 / 휠 확대 / 우클릭 이동) ---------- */
   function init3d(){
     var T=window.THREE, cv=$('#cv'), stage=$('#stage');
@@ -740,6 +888,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     }
     function sprite(t,h){var s=new T.Sprite(new T.SpriteMaterial({map:t,depthTest:false,transparent:true,sizeAttenuation:false}));s.scale.set(h*t.userData.ar,h,1);s.renderOrder=20;scene.add(s);return s;}
 
+    var H={T:T,M:M,B:B,C:C,rbox:rbox,sprite:sprite,tex:tex,fillet:function(p,r){return fillet(p,r);}};
     /* 바닥·조명 */
     scene.add(new T.HemisphereLight(0xffffff,0x8a8a80,.35));
     var dl=new T.DirectionalLight(0xffffff,.75);dl.position.set(200,7000,3200);dl.target.position.set(2400,0,0);scene.add(dl);scene.add(dl.target);
@@ -800,21 +949,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
           encLid=at(B(w-6,6,d-6,M(0x26292d,.45,.2)),cx,b[3]+2,cz);
           ENC.glands.forEach(function(gl){var z=ENC.z0-gl[1],m=at(C(9,22,M(0x111111,.6),16),b[0]-6,670,z);m.rotation.z=Math.PI/2;});
           at(B(8,24,30,M(0x333333,.5)),ENC.x0+140,690,ENC.z0+6);
-          // 내부 (함체 선택 시 보임)
-          at(B(w-16,4,d-16,M(0x6b6f74,.6,.3)),cx,b[2]+4,cz);
-          ENC.items.forEach(function(it){
-            var a=encXZ(it.u[0],it.v[0]),c=encXZ(it.u[1],it.v[1]),x0=Math.min(a[0],c[0]),x1=Math.max(a[0],c[0]),z0=Math.min(a[1],c[1]),z1=Math.max(a[1],c[1]),
-              mx=(x0+x1)/2,mz=(z0+z1)/2,ww=x1-x0,dd=z1-z0,y=b[2]+8;
-            var lb2=sprite(tex(it.t,'#ffffff',it.k==='relay'?'#1f5fa8':it.k==='pcb'?'#0E8576':it.k==='hub'?'#4B5563':'#B7791F'),.024);lb2.position.set(mx,b[3]+90,mz);lb2.visible=false;encLabels.push(lb2);
-            if(it.k==='pcb'){at(B(ww,2,dd,M(0x151515,.5)),mx,y+2,mz);
-              at(B(ww*.9,9,5,M(0x2e8b57,.5)),mx,y+7,z0+4);at(B(ww*.9,9,5,M(0x2e8b57,.5)),mx,y+7,z1-4);
-              at(B(ww*.45,3,dd*.4,M(0x1b1b1b,.4)),mx,y+5,mz);at(B(ww*.3,3,dd*.25,M(0xc0c4c8,.3,.9)),mx-ww*.1,y+7,mz);}
-            else if(it.k==='relay'){at(B(ww,2,dd,M(0x1d4fa0,.45)),mx,y+2,mz);
-              at(B(ww*.35,16,dd*.4,M(0x1f5fa8,.4)),mx-ww*.18,y+11,mz);at(B(ww*.35,16,dd*.4,M(0x1f5fa8,.4)),mx+ww*.18,y+11,mz);
-              at(B(ww*.8,8,5,M(0x1d6fb8,.5)),mx,y+6,z0+4);}
-            else if(it.k==='hub'){at(rbox(ww,14,dd,4,M(0x4b5563,.5,.2)),mx,y+7,mz);}
-            else {at(B(ww,12,dd,M(0x151515,.6)),mx,y+6,mz);for(var j=0;j<4;j++)at(C(3,3,M(0xc0c4c8,.3,.9),12),x0+6+j*(ww-12)/3,y+13,mz);}
-          });
+          encInterior(ENC,H,at,function(sp){sp.visible=false;encLabels.push(sp);});
           break;
         case 'pb':
           at(rbox(w,h,d,30,M(0x9aa0a6,.45,.25)),cx,cy,cz);
@@ -929,7 +1064,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
       var dist=Math.max(minD||900,s*1.9)*Math.max(1,1.3/cam.aspect);pressed(null);fly([c.x+dir.x*dist,c.y+dir.y*dist,c.z+dir.z*dist],[c.x,c.y,c.z]);}
     function focus(){
       if(sel.k==='all'){view('all');return;}
-      if(sel.k==='part'){var g=groups[sel.id];if(sel.id==='enc'){var c=new T.Box3().setFromObject(g).getCenter(new T.Vector3());pressed(null);fly([c.x+520,c.y+1050,c.z-560],[c.x,c.y,c.z]);return;}
+      if(sel.k==='part'){var g=groups[sel.id];if(sel.id==='enc'){var c=new T.Box3().setFromObject(g).getCenter(new T.Vector3());pressed(null);fly([c.x+230,c.y+560,c.z-260],[c.x,c.y,c.z]);return;}
         focusObj(g,sel.id==='film'||sel.id==='led'?1800:p0(sel.id)?1700:1300);return;}
       focusObj(wm[sel.id],1400);
     }
