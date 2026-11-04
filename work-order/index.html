@@ -272,7 +272,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
 
 <header class="top wrap">
   <div class="t">
-    <div class="eyebrow">작업지시서 · v1.0 · 2026-11-04</div>
+    <div class="eyebrow">작업지시서 · v1.1 · 2026-11-04</div>
     <h1>PCS 차량 작업지시서</h1>
   </div>
   <div class="meta">
@@ -511,9 +511,10 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     {id:'film',n:9,g:'w4',t:'PDLC 필름',sub:'우측 뒷창',where:'2열 우측 뒷창',plane:[2580,3250,1080,1480,-905],
       say:'우측 뒷창에 필름을 시공하고 구동선을 필러 쪽으로 넣습니다.',
       todo:['우측 뒷창 필름 시공','V-07 구동선 필러 쪽 인입·연결','도어·필러 인입부 보호 (그로밋·튜브)'],prep:['PDLC 필름 사양'],warn:['창이 오르내리면 선이 끼지 않게 경로를 정해 주세요. 도어 인입은 현장 판단으로 함께 확인합니다.']},
-    {id:'led',n:10,g:'w4',t:'LED 스트랩',sub:'우측 뒷창 주변',where:'2열 우측 뒷창 주변',frame:[2580,3250,1080,1480,-893],
-      say:'우측 뒷창 주변에 LED 스트랩을 붙이고 신호·전원선을 연결합니다.',
-      todo:['LED 스트랩 부착 (부착 형태 협의)','V-08 데이터·GND 연결','V-09 5V 전원 연결 (파워뱅크 DC5V)'],prep:['LED 스트랩'],warn:[]},
+    {id:'led',n:10,g:'w4',t:'LED 스트랩',sub:'2열 우측 도어 · 간접 조명',where:'2열 우측 도어, 손잡이 아래 튀어나온 부분의 아랫면 (빛이 아래로 은은하게 퍼짐)',b:[2700,3060,744,752,-852,-826],
+      say:'2열 우측 도어 손잡이 아래 튀어나온 부분의 아랫면에 LED 스트랩(약 30~40cm)을 붙입니다. LED 소자는 보이지 않고 빛만 아래로 퍼지게 합니다.',
+      todo:['튀어나온 부분 아랫면에 LED 스트랩 부착 (약 30~40cm, 소자가 직접 보이지 않게)','V-08 데이터·GND, V-09 5V를 도어 앞쪽(힌지 쪽)으로 인입해 연결','도어 힌지부 배선 보호 (그로밋·주름관)'],prep:['LED 스트랩 (약 30~40cm)'],
+      warn:['도어를 여닫을 때 선이 당기거나 끼지 않게 힌지 쪽에 여유를 둡니다.','LED 소자가 승객 눈에 직접 보이지 않는 각도로 붙여 주세요.']},
     {id:'sen',n:11,g:'w4',t:'가스센서',sub:'위치 협의',where:'2열 (정확한 위치 협의)',b:[2252,2300,520,600,-45,45],tbd:1,
       say:'2열 승객 가까이, 통풍이 막히지 않는 곳에 고정합니다.',
       todo:['위치 확정 후 고정','V-05 4가닥 꼬임·차폐선 연결'],prep:['가스센서 모듈, 연결 케이블'],warn:['센서 선은 꼬임·차폐선으로 연장합니다.']},
@@ -549,8 +550,8 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     {id:'V-05',f:'enc',to:'sen',k:'sig',n:4,t:'센서선 (꼬임·차폐)',cores:[['3.3V','pwr'],['GND','gnd'],['SDA','sig'],['SCL','sig']],note:'보드 A → 가스센서. 짧게, 꼬임·차폐선으로.',path:'중앙 바닥',p:[gland('V-05'),[4275,600,580],[3380,600,580],[3380,600,20]].concat(sp('c',20),[[2300,390,20],[2300,560,0]])},
     {id:'V-06',f:'enc',to:'uvc',k:'pwr',n:2,t:'12V 전원',cores:[['12V + (릴레이 IN2 채널 NO)','pwr'],['12V −','gnd']],note:'함체 릴레이 IN2 채널(보드 B GPIO5) COM→NO를 거친 12V. 12V −는 바로 연결.',path:'2열 바닥',p:[gland('V-06'),[4350,600,545],[3380,600,545],[3380,600,150],[3360,390,-150],[2700,390,-380],[2390,410,-390]]},
     {id:'V-07',f:'pdc',to:'film',k:'pwr',n:2,t:'필름 구동선',cores:[['구동 출력 1','pwr'],['구동 출력 2','pwr']],note:'제어기 출력 사양 확인 후 절연·굵기 결정.',path:'우측 사이드실',p:[[3860,700,420],[3860,620,300],[3400,620,-660]].concat(sp('r',0),[[2560,900,-860],[2590,1080,-900]])},
-    {id:'V-08',f:'enc',to:'led',k:'sig',n:2,t:'LED 신호선',cores:[['데이터','sig'],['GND','gnd']],note:'보드 C → LED 스트랩. 데이터와 GND를 함께.',path:'우측 사이드실',p:[gland('V-08'),[4445,600,535],[3420,600,535],[3420,600,-680]].concat(sp('r',20),[[2560,880,-850],[2590,1100,-890]])},
-    {id:'V-09',f:'pb',to:'led',k:'pwr',n:2,t:'5V 전원',cores:[['5V +','pwr'],['5V −','gnd']],note:'파워뱅크 ② DC5V → LED 스트랩.',path:'우측 사이드실',p:[[3641,700,380],[3720,660,380],[3720,660,-690],[3400,660,-690]].concat(sp('r',40),[[2560,860,-840],[2590,1120,-888]])},
+    {id:'V-08',f:'enc',to:'led',k:'sig',n:2,t:'LED 신호선',cores:[['데이터','sig'],['GND','gnd']],note:'보드 C → LED 스트랩. 데이터와 GND를 함께. 우측 사이드실 → 2열 우측 도어 힌지 쪽으로 인입.',path:'우측 사이드실 → 도어',p:[gland('V-08'),[4445,600,535],[3420,600,535],[3420,600,-680]].concat(sp('r',20),[[2500,450,-858],[2500,700,-868],[2700,748,-842]])},
+    {id:'V-09',f:'pb',to:'led',k:'pwr',n:2,t:'5V 전원',cores:[['5V +','pwr'],['5V −','gnd']],note:'파워뱅크 ② DC5V → LED 스트랩. 도어 힌지 쪽으로 인입.',path:'우측 사이드실 → 도어',p:[[3641,700,380],[3720,660,380],[3720,660,-690],[3400,660,-690]].concat(sp('r',40),[[2490,450,-848],[2490,710,-866],[2700,750,-834]])},
     {id:'V-10',f:'enc',to:'rear',k:'sig',n:6,t:'후측방센서선',cores:[['5V','pwr'],['GND','gnd'],['SDA','sig'],['SCL','sig'],['WAKE_UP','sig'],['MCU_INT','sig']],note:'보드 C → 후측방센서. I2C 포함 6가닥, 꼬임·차폐선 권장.',path:'트렁크',p:[gland('V-10'),[4475,600,525],[4580,600,525],[4580,600,-450],[4690,520,-550]]},
     {id:'T-1A',f:'pc',to:'enc',k:'usb',n:1,u:'개',t:'USB-A → 보드 A',cores:[['미니 PC USB-A ↔ 보드 A USB-C (A-C 케이블)','hub']],note:'미니 PC → 트렁크 덮개 아래 → 함체 뒷면 입구 → 보드 A USB-C.',path:'트렁크 안',p:[[4546,500,-740],[4575,600,-740],[4575,600,830],[4260,600,830],[4260,500,806]]},
     {id:'T-1B',f:'pc',to:'enc',k:'usb',n:1,u:'개',t:'USB-C → 보드 B',cores:[['미니 PC USB-C ↔ 보드 B USB-C (C-C 케이블)','hub']],note:'미니 PC → 트렁크 덮개 아래 → 함체 뒷면 입구 → 보드 B USB-C.',path:'트렁크 안',p:[[4394,500,-770],[4370,600,-770],[4370,600,835],[4360,600,835],[4360,500,806]]},
@@ -1013,6 +1014,9 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
       var bk=add(rbox(140,720,520,55,leather),2275,960,zc);bk.rotation.z=.17;
       add(rbox(90,180,270,40,leather),2365,1420,zc).rotation.z=.17;
       add(B(400,80,360,plastic),1990,420,zc);});
+    add(B(840,600,12,M(0x4a4e54,.8,.05)),2900,760,-884);            // 2열 우측 도어 안쪽 트림
+    add(rbox(400,26,70,10,plastic),2880,766,-845);                // 2열 우측 도어: 손잡이 아래 튀어나온 부분
+    add(rbox(160,40,30,10,M(0x3a3d42,.5,.2)),2880,840,-866);       // 도어 손잡이
     add(rbox(540,130,1580,55,leather),2900,545,0);                // 2열 시트
     add(rbox(150,740,1580,60,leather),3195,990,0).rotation.z=.15;
     [-500,0,500].forEach(function(z){add(rbox(90,170,250,40,leather),3270,1450,z).rotation.z=.15;});
@@ -1078,9 +1082,11 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
           f.position.set((q[0]+q[1])/2,(q[2]+q[3])/2,q[4]);g.add(f);
           break;
         case 'led':
-          var fr=p.frame,path=new T.CurvePath(),P=[[fr[0],fr[2]],[fr[1],fr[2]],[fr[1],fr[3]],[fr[0],fr[3]],[fr[0],fr[2]]];
-          for(var n=1;n<P.length;n++)path.add(new T.LineCurve3(new T.Vector3(P[n-1][0],P[n-1][1],fr[4]),new T.Vector3(P[n][0],P[n][1],fr[4])));
-          g.add(new T.Mesh(new T.TubeGeometry(path,64,11,8,false),M(0xffffff,.4,0,{emissive:0xffc070,emissiveIntensity:.9})));
+          // 손잡이 아래 튀어나온 부분 아랫면의 띠 + 아래로 퍼지는 빛
+          at(B(w,h,d,M(0xfff4e0,.4,0,{emissive:0xffc070,emissiveIntensity:1.2})),cx,cy,cz);
+          var gc=document.createElement('canvas');gc.width=128;gc.height=128;var gx=gc.getContext('2d'),gr=gx.createRadialGradient(64,0,4,64,0,128);gr.addColorStop(0,'rgba(255,205,130,.95)');gr.addColorStop(.45,'rgba(255,180,90,.45)');gr.addColorStop(1,'rgba(255,170,80,0)');gx.fillStyle=gr;gx.fillRect(0,0,128,128);
+          var glow=new T.Mesh(new T.PlaneGeometry(w+80,170),new T.MeshBasicMaterial({map:new T.CanvasTexture(gc),transparent:true,depthWrite:false,side:T.DoubleSide}));
+          glow.position.set(cx,b[2]-85,-876);glow.userData.noPick=1;g.add(glow);
           break;
         case 'sen':
           at(rbox(w,h,d,6,M(0x1b1d20,.5,0,op)),cx,cy,cz);at(B(w*.8,2,d*.6,M(0xf2f2f0,.6,0,op)),cx,b[3]+1,cz);
@@ -1171,7 +1177,8 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     function focus(){
       if(sel.k==='all'){view('all');return;}
       if(sel.k==='part'){var g=groups[sel.id];if(sel.id==='enc'){var c=new T.Box3().setFromObject(g).getCenter(new T.Vector3());pressed(null);fly([c.x-220,c.y+640,c.z-420],[c.x,c.y,c.z]);return;}
-        focusObj(g,sel.id==='film'||sel.id==='led'?1800:p0(sel.id)?1700:1300);return;}
+        if(sel.id==='led'){pressed(null);fly([3050,1000,-250],[2880,740,-850]);return;}
+        focusObj(g,sel.id==='film'?1800:p0(sel.id)?1700:1300);return;}
       focusObj(wm[sel.id],1400);
     }
     function p0(id){return id==='ocu'||PBY[id].g==='car';}
