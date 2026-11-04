@@ -227,6 +227,33 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
 .bp-key{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px}
 .bp-key i{display:inline-block;width:16px;height:5px;border-radius:2px;margin-right:6px;vertical-align:middle}
 .bp-rel{font-size:13.5px;font-weight:600;border-left:4px solid #1f5fa8;padding-left:10px;margin:0}
+.editor{margin-top:12px;background:var(--card);border:1px solid var(--line);border-top:5px solid var(--w2);border-radius:14px;padding:14px 18px 18px;display:grid;gap:10px}
+.ed-head{display:grid;gap:4px}
+.ed-bar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:14px}
+.ed-bar .sp{flex:1 1 auto}
+.ed-bar input{width:72px;font:inherit;padding:4px 6px;border:1px solid var(--line-strong);border-radius:6px;background:var(--card);color:var(--ink)}
+.vbtn:disabled{opacity:.45;cursor:default}
+.ed-sel{font-size:14px;font-weight:600;min-height:1.5em}
+.ed-warn{color:#C92A2A;font-weight:600;font-size:14px}
+.ed-map{border-radius:10px;background:var(--bg);padding:6px;display:flex;justify-content:center}
+.ed-map svg{display:block;width:100%;max-width:560px;height:auto;max-height:78vh;touch-action:none;user-select:none;-webkit-user-select:none}
+.ed-floor{fill:var(--car);stroke:var(--line-strong);stroke-width:2}
+.ed-grid{stroke:var(--line);stroke-width:1}
+.ed-ref{fill:var(--car-2);stroke:var(--line-strong);stroke-dasharray:5 4}
+.ed-ref-t{fill:var(--mute);font-size:10px}
+.ed-side{fill:var(--mute);font:600 12px var(--f-body)}
+.ed-blk{cursor:grab}
+.ed-blk rect{fill:var(--c);fill-opacity:.85;stroke:var(--ink);stroke-width:1.5}
+.ed-blk.sel rect{stroke:#F2B705;stroke-width:4}
+.ed-blk.bad rect{stroke:#E03131;stroke-width:4;stroke-dasharray:6 3}
+.ed-blk:focus{outline:none}
+.ed-blk:focus-visible rect{stroke:#F2B705;stroke-width:4}
+.ed-t{fill:#fff;font-weight:700;pointer-events:none}
+.ed-t2{fill:#fff;font:500 10px var(--f-mono);pointer-events:none}
+.ed-face{stroke:#F2B705;stroke-width:6;stroke-linecap:round;pointer-events:none}
+.ed-out{display:grid;gap:6px}
+.ed-out-h{display:flex;align-items:center;gap:10px}
+.ed-out textarea{width:100%;font:12.5px/1.5 var(--f-mono);border:1px solid var(--line-strong);border-radius:8px;padding:8px 10px;background:var(--bg);color:var(--ink);resize:vertical}
 @media (max-width:820px){ .d-cols,.team{grid-template-columns:1fr} }
 @media (max-width:560px){
   .stagebox{padding:8px;border-radius:12px}
@@ -245,7 +272,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
 
 <header class="top wrap">
   <div class="t">
-    <div class="eyebrow">작업지시서 · v0.8 · 2026-10-30</div>
+    <div class="eyebrow">작업지시서 · v0.9 · 2026-11-04</div>
     <h1>PCS 차량 작업지시서</h1>
   </div>
   <div class="meta">
@@ -264,6 +291,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
       <button type="button" class="vbtn" data-view="front" aria-pressed="false">1열</button>
       <button type="button" class="vbtn" data-view="trunk" aria-pressed="false">트렁크</button>
       <span class="sp"></span>
+      <button type="button" class="vbtn" id="vEdit" aria-pressed="false">트렁크 배치 편집</button>
       <button type="button" class="vbtn" id="vLbl" aria-pressed="true">번호 표시</button>
       <button type="button" class="vbtn" data-pick="all">선택 해제</button>
     </div>
@@ -277,6 +305,28 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     <div class="fallback2d" id="fb2d"></div>
     <div class="chips" id="chips"></div>
   </div>
+
+  <section class="editor" id="editor" hidden aria-label="트렁크 배치 편집">
+    <div class="ed-head">
+      <h2>트렁크 배치 편집</h2>
+      <p class="mute">블록을 끌어서 옮기고, 두 번 누르거나 <b>90° 회전</b>으로 돌립니다. 다 옮긴 뒤 <b>좌표 복사</b>를 눌러 Claude에게 붙여 주세요. 블록 크기는 실측값, 휠하우스는 대략 위치입니다.</p>
+    </div>
+    <div class="ed-bar">
+      <label>트렁크 바닥 길이 <input type="number" id="ed-L" min="40" max="400" step="1" inputmode="numeric"> cm</label>
+      <label>폭 <input type="number" id="ed-W" min="40" max="400" step="1" inputmode="numeric"> cm</label>
+      <span class="sp"></span>
+      <button type="button" class="vbtn" id="ed-rot" disabled>90° 회전</button>
+      <button type="button" class="vbtn" id="ed-reset">처음 배치로</button>
+      <button type="button" class="vbtn" id="ed-close">닫기</button>
+    </div>
+    <p class="ed-sel" id="ed-sel" aria-live="polite"></p>
+    <p class="ed-warn" id="ed-warn" hidden>⚠ 겹친 블록이 있습니다 (빨간 테두리)</p>
+    <div class="ed-map" id="ed-map"></div>
+    <div class="ed-out">
+      <div class="ed-out-h"><b>좌표</b><button type="button" class="vbtn ed-copy" id="ed-copy">좌표 복사</button></div>
+      <textarea id="ed-out" rows="8" readonly aria-label="배치 좌표"></textarea>
+    </div>
+  </section>
 
   <section class="detail" id="detail" aria-live="polite"></section>
 
@@ -1162,6 +1212,101 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     apply();
     (function loop(){requestAnimationFrame(loop);tween();ctl.update();if(helper.visible&&helperObj)helper.setFromObject(helperObj);ren.render(scene,cam);})();
   }
+
+  /* ---------- 트렁크 배치 편집 ----------
+     위에서 본 트렁크: 왼쪽 = 앞(2열 등받이), 오른쪽 = 테일게이트, 위 = 조수석 쪽, 아래 = 운전석 쪽. 단위 cm */
+  (function(){
+    var ed=$('#editor'), btn=$('#vEdit'); if(!ed||!btn) return;
+    var IDS=['enc','pb','pc','pdc','spl'], KEY2='pcs-trunk-layout-v1', S=4, PAD=34;
+    var TR={L:125,W:172}, items={}, selId=null;
+    function defaults(){
+      items={};
+      IDS.forEach(function(id){var b=PBY[id].b;
+        items[id]={ax:((b[0]+b[1])/2-3350)/10, ay:((b[4]+b[5])/2+860)/10, w:(b[1]-b[0])/10, h:(b[5]-b[4])/10, rot:0};});
+      TR={L:125,W:172};
+    }
+    defaults();
+    try{var sv=JSON.parse(localStorage.getItem(KEY2)||'null'); if(sv&&sv.items){IDS.forEach(function(id){if(sv.items[id])items[id]=sv.items[id];}); if(sv.TR)TR=sv.TR;}}catch(e){}
+    function keep(){try{localStorage.setItem(KEY2,JSON.stringify({items:items,TR:TR}));}catch(e){}}
+    function dims(it){return it.rot%180?[it.h,it.w]:[it.w,it.h];}
+    function r1(n){return Math.round(n*10)/10;}
+    function clamp(it){var d=dims(it);it.ax=Math.min(TR.L-d[0]/2,Math.max(d[0]/2,it.ax));it.ay=Math.min(TR.W-d[1]/2,Math.max(d[1]/2,it.ay));}
+    function overlaps(){var o={};IDS.forEach(function(a){IDS.forEach(function(b){if(a>=b)return;var A=items[a],B=items[b],da=dims(A),db=dims(B);
+      if(Math.abs(A.ax-B.ax)<(da[0]+db[0])/2-.05&&Math.abs(A.ay-B.ay)<(da[1]+db[1])/2-.05){o[a]=1;o[b]=1;}});});return o;}
+    var FACE=['앞(2열 쪽)','조수석 쪽','뒤(테일게이트 쪽)','운전석 쪽'];
+    function svg(){
+      var Wp=TR.L*S, Hp=TR.W*S, ov=overlaps(), o='<svg id="ed-svg" viewBox="0 0 '+(Wp+PAD*2)+' '+(Hp+PAD*2)+'" role="img" aria-label="트렁크 배치 편집 (위에서 본 모습)">';
+      o+='<rect x="'+PAD+'" y="'+PAD+'" width="'+Wp+'" height="'+Hp+'" rx="10" class="ed-floor"/>';
+      for(var gx=10;gx<TR.L;gx+=10)o+='<line class="ed-grid" x1="'+(PAD+gx*S)+'" y1="'+PAD+'" x2="'+(PAD+gx*S)+'" y2="'+(PAD+Hp)+'"/>';
+      for(var gy=10;gy<TR.W;gy+=10)o+='<line class="ed-grid" x1="'+PAD+'" y1="'+(PAD+gy*S)+'" x2="'+(PAD+Wp)+'" y2="'+(PAD+gy*S)+'"/>';
+      // 휠하우스 (참고, 대략)
+      [[0,14],[TR.W-14,TR.W]].forEach(function(r){o+='<rect class="ed-ref" x="'+(PAD+8*S)+'" y="'+(PAD+r[0]*S)+'" width="'+(30*S)+'" height="'+((r[1]-r[0])*S)+'" rx="6"/>';});
+      o+='<text class="ed-side" x="'+(PAD-10)+'" y="'+(PAD+Hp/2)+'" transform="rotate(-90 '+(PAD-10)+' '+(PAD+Hp/2)+')" text-anchor="middle">앞 · 2열 등받이</text>';
+      o+='<text class="ed-side" x="'+(PAD+Wp+12)+'" y="'+(PAD+Hp/2)+'" transform="rotate(90 '+(PAD+Wp+12)+' '+(PAD+Hp/2)+')" text-anchor="middle">테일게이트</text>';
+      o+='<text class="ed-side" x="'+(PAD+Wp/2)+'" y="'+(PAD-12)+'" text-anchor="middle">조수석 쪽</text>';
+      o+='<text class="ed-side" x="'+(PAD+Wp/2)+'" y="'+(PAD+Hp+22)+'" text-anchor="middle">운전석 쪽</text>';
+      o+='<text class="ed-ref-t" x="'+(PAD+23*S)+'" y="'+(PAD+9*S)+'" text-anchor="middle">휠하우스(대략)</text>';
+      IDS.forEach(function(id){
+        var it=items[id], p=PBY[id], d=dims(it), x=PAD+(it.ax-d[0]/2)*S, y=PAD+(it.ay-d[1]/2)*S, w=d[0]*S, h=d[1]*S, c={enc:'#2F5B8A',pb:'#5F6B78',pc:'#0E8576',pdc:'#B7791F',spl:'#C2255C'}[id];
+        o+='<g class="ed-blk'+(selId===id?' sel':'')+(ov[id]?' bad':'')+'" data-ed="'+id+'" tabindex="0" role="button" aria-label="'+label(p)+' 옮기기">';
+        o+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="6" style="--c:'+c+'"/>';
+        if(id==='enc'){ // 글랜드 면 표시
+          var f=it.rot/90, gx1=f===0?x:f===2?x+w:x, gy1=f===1?y:f===3?y+h:y, gx2=f===0?x:f===2?x+w:x+w, gy2=f===1?y:f===3?y+h:y+h;
+          o+='<line x1="'+gx1+'" y1="'+gy1+'" x2="'+gx2+'" y2="'+gy2+'" class="ed-face"/>';}
+        var fs=Math.max(10,Math.min(14,w/7));
+        o+='<text x="'+(x+w/2)+'" y="'+(y+h/2-2)+'" text-anchor="middle" class="ed-t" style="font-size:'+fs+'px">'+(p.n?p.n+'. ':'')+(id==='spl'?'분배':p.t)+'</text>';
+        o+='<text x="'+(x+w/2)+'" y="'+(y+h/2+fs)+'" text-anchor="middle" class="ed-t2">'+r1(d[0])+' × '+r1(d[1])+'</text></g>';
+      });
+      return o+'</svg>';
+    }
+    function outText(){
+      var ov=overlaps(), lines=['[트렁크 배치] 트렁크 바닥 '+TR.L+' × '+TR.W+'cm · 블록 중심 기준 · 앞벽(2열 등받이)과 운전석 쪽 벽에서 잰 거리'];
+      IDS.forEach(function(id){var it=items[id],p=PBY[id],d=dims(it);
+        lines.push('- '+(p.n?p.n+'. ':'')+p.t+' ('+r1(d[0])+'×'+r1(d[1])+'cm): 앞벽 '+r1(it.ax)+'cm, 운전석 벽 '+r1(TR.W-it.ay)+'cm, 회전 '+it.rot+'°'+(id==='enc'?' · 글랜드 면 '+FACE[it.rot/90]:'')+(ov[id]?' · ⚠ 겹침':''));});
+      lines.push('JSON '+JSON.stringify({TR:TR,items:items}));
+      return lines.join('\n');
+    }
+    function render(){
+      $('#ed-map').innerHTML=svg(); $('#ed-out').value=outText();
+      var it=selId&&items[selId], p=selId&&PBY[selId];
+      $('#ed-sel').textContent=it?(p.n?p.n+'. ':'')+p.t+' · 앞벽 '+r1(it.ax)+'cm · 운전석 벽 '+r1(TR.W-it.ay)+'cm · '+it.rot+'°':'블록을 눌러 선택하고 끌어서 옮기세요';
+      $('#ed-rot').disabled=!it;
+      var ov=overlaps(); $('#ed-warn').hidden=!Object.keys(ov).length;
+      bind();
+    }
+    var drag=null;
+    function pt(e){var s=$('#ed-svg'),m=s.getScreenCTM().inverse(),q=s.createSVGPoint();q.x=e.clientX;q.y=e.clientY;q=q.matrixTransform(m);return [(q.x-PAD)/S,(q.y-PAD)/S];}
+    function bind(){
+      var s=$('#ed-svg');
+      $$('.ed-blk',s).forEach(function(g){
+        g.addEventListener('pointerdown',function(e){var id=g.getAttribute('data-ed'),q=pt(e);selId=id;drag={id:id,dx:q[0]-items[id].ax,dy:q[1]-items[id].ay,moved:0};
+          try{s.setPointerCapture(e.pointerId);}catch(_){} $$('.ed-blk',s).forEach(function(x){x.classList.toggle('sel',x===g);});e.preventDefault();});
+        g.addEventListener('dblclick',function(){selId=g.getAttribute('data-ed');rotate();});
+        g.addEventListener('keydown',function(e){var id=g.getAttribute('data-ed'),it=items[id],st=e.shiftKey?10:1;selId=id;
+          if(e.key==='ArrowLeft')it.ax-=st;else if(e.key==='ArrowRight')it.ax+=st;else if(e.key==='ArrowUp')it.ay-=st;else if(e.key==='ArrowDown')it.ay+=st;else if(e.key==='r'||e.key==='R'){rotate();return;}else return;
+          e.preventDefault();clamp(it);keep();render();var ng=$('.ed-blk[data-ed="'+id+'"]');if(ng)ng.focus();});
+      });
+      s.addEventListener('pointermove',function(e){if(!drag)return;var q=pt(e),it=items[drag.id];it.ax=Math.round(q[0]-drag.dx);it.ay=Math.round(q[1]-drag.dy);clamp(it);drag.moved=1;
+        var g=$('.ed-blk[data-ed="'+drag.id+'"]',s),d=dims(it),r=$('rect',g);r.setAttribute('x',PAD+(it.ax-d[0]/2)*S);r.setAttribute('y',PAD+(it.ay-d[1]/2)*S);
+        $$('text',g).forEach(function(t,i){t.setAttribute('x',PAD+it.ax*S);});var ts=$$('text',g);var fs=parseFloat(ts[0].style.fontSize)||12;ts[0].setAttribute('y',PAD+it.ay*S-2);ts[1].setAttribute('y',PAD+it.ay*S+fs);
+        var ln=$('line',g);if(ln)ln.style.display='none';
+        $('#ed-sel').textContent=(PBY[drag.id].n?PBY[drag.id].n+'. ':'')+PBY[drag.id].t+' · 앞벽 '+r1(it.ax)+'cm · 운전석 벽 '+r1(TR.W-it.ay)+'cm';});
+      function end(){if(!drag)return;drag=null;keep();render();}
+      s.addEventListener('pointerup',end);s.addEventListener('pointercancel',end);
+    }
+    function rotate(){if(!selId)return;var it=items[selId];it.rot=(it.rot+90)%360;clamp(it);keep();render();}
+    $('#ed-rot').addEventListener('click',rotate);
+    $('#ed-reset').addEventListener('click',function(){defaults();selId=null;keep();syncSize();render();});
+    $('#ed-copy').addEventListener('click',function(){var t=$('#ed-out'),b=$('#ed-copy');
+      function ok(){b.textContent='복사했습니다';setTimeout(function(){b.textContent='좌표 복사';},1600);}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t.value).then(ok,function(){t.focus();t.select();b.textContent='Ctrl+C로 복사하세요';});}
+      else{t.focus();t.select();b.textContent='Ctrl+C로 복사하세요';}});
+    function syncSize(){$('#ed-L').value=TR.L;$('#ed-W').value=TR.W;}
+    ['ed-L','ed-W'].forEach(function(idn){$('#'+idn).addEventListener('change',function(){var v=parseFloat(this.value);if(!(v>=40&&v<=400)){syncSize();return;}
+      if(idn==='ed-L')TR.L=v;else TR.W=v;IDS.forEach(function(id){clamp(items[id]);});keep();render();});});
+    btn.addEventListener('click',function(){var on=ed.hidden;ed.hidden=!on;btn.setAttribute('aria-pressed',on?'true':'false');if(on){syncSize();render();ed.scrollIntoView({block:'start'});}});
+    $('#ed-close').addEventListener('click',function(){ed.hidden=true;btn.setAttribute('aria-pressed','false');});
+  })();
 
   select('all');
   try{init3d();}catch(e){fallback2d();}
