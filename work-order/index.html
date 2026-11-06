@@ -522,10 +522,10 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     {id:'pdc',n:5,g:'w2',t:'PDLC 제어기',sub:'필름 구동 장치',where:'2단 서랍장 1단 (함체 옆)',b:[3450,3690,650,710,90,240],
       say:'PDLC 제어기를 서랍장 1단 함체 옆에 고정합니다. 12V는 분배 케이블에서 받고, 켜고 끄는 T/C 선은 함체 릴레이 IN1 채널에 연결합니다.',
       todo:['1단 서랍 함체 옆에 고정','T-3 흰선 → 릴레이 IN1 채널 NO, 검정선 → COM','T-4 12V 연결 (분배 케이블)','V-07 필름 구동선 연결'],prep:['PDLC 제어기'],warn:['필름 구동선은 고전압 교류일 수 있습니다. 절연을 확실히 해 주세요.']},
-    {id:'air',n:6,g:'w2',nodim:1,t:'공기청정기',sub:'IR 제어 · 12V',where:'2단 서랍장 꼭대기',b:[3500,3740,940,1230,-280,-50],
+    {id:'air',n:6,g:'w2',t:'공기청정기',sub:'IR 제어 · 12V',where:'2단 서랍장 꼭대기',b:[3500,3740,940,1230,-280,-50],
       say:'서랍장 꼭대기에 고정하고 12V 전원과 IR 송신모듈을 연결합니다.',
       todo:['서랍장 꼭대기 고정 (미끄럼 방지·고정 브래킷, 급제동에 넘어지지 않게)','V-03 12V 전원 연결 (분배 케이블)','V-01 IR 송신모듈을 기기 IR 수신부 옆에 부착'],prep:['공기청정기 본품, IR 송신모듈'],warn:['IR 송신모듈 위치는 함께 동작을 보며 정합니다.']},
-    {id:'dif',n:7,g:'w2',nodim:1,t:'디퓨저',sub:'IR 제어 · 5V',where:'2단 서랍장 꼭대기 (홀더 고정)',cyl:[3620,150,40,940,1130],
+    {id:'dif',n:7,g:'w2',t:'디퓨저',sub:'IR 제어 · 5V',where:'2단 서랍장 꼭대기 (홀더 고정)',cyl:[3620,150,40,940,1130],
       say:'서랍장 꼭대기 홀더에 고정하고 5V 전원과 IR 송신모듈을 연결합니다.',
       todo:['서랍장 꼭대기 홀더에 고정','V-04 5V 전원 연결 (굵은 선)','V-02 IR 송신모듈을 기기 IR 수신부 옆에 부착'],prep:['디퓨저 본품, IR 송신모듈, 홀더'],warn:['5V 선은 길면 전압이 떨어집니다. 굵은 선을 써 주세요.','액체가 쏟아지지 않게 홀더를 단단히 고정해 주세요.']},
     {id:'uvc',n:8,g:'w3',t:'UVC 모듈',sub:'12V · 릴레이 IN2 채널',where:'조수석 시트 뒤 하단, 2열을 향함',b:[2250,2390,380,450,-560,-220],
@@ -747,6 +747,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     top:{t:'위에서',cap:'위에서 내려다본 그림 (위쪽이 차 앞쪽)',H:function(b){return [-b[5],-b[4]];},V:function(b){return [b[0],b[1]];},D:function(b){return [b[2],b[3]];},ph:function(q){return -q[2];},pv:function(q){return q[0];},e:['운전석','▲ 차 앞쪽','조수석','▼ 테일게이트']},
     front:{t:'정면',cap:'테일게이트 쪽에서 앞을 보고 그린 그림',H:function(b){return [-b[5],-b[4]];},V:function(b){return [-b[3],-b[2]];},D:function(b){return [b[0],b[1]];},ph:function(q){return -q[2];},pv:function(q){return -q[1];},e:['운전석','위','조수석','아래']},
     side:{t:'측면',cap:'조수석 쪽에서 본 그림 (오른쪽이 차 앞쪽)',H:function(b){return [-b[1],-b[0]];},V:function(b){return [-b[3],-b[2]];},D:function(b){return [b[4],b[5]];},ph:function(q){return -q[0];},pv:function(q){return -q[1];},e:['◀ 테일게이트','위','차 앞쪽 ▶','아래']}};
+  var OVDIM={enc:'치수는 실측 기반 대략값',pb:'치수는 실측 기반 대략값',pc:'치수는 실측 기반 대략값',drw:'치수는 제안 크기'};
   var ovN=0, ovCur='top';
   function f1(n){return n.toFixed(1);}
   function rmm(n){return Math.round(n/10)*10;}
@@ -776,6 +777,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     ctx.forEach(function(c){o+=rect(ovBB(c),'ov-ctx');});
     if(p.cyl&&vn==='top') o+='<circle class="ov-sel" cx="'+f1(X(-p.cyl[1]))+'" cy="'+f1(Y(p.cyl[0]))+'" r="'+f1(p.cyl[2]*s)+'"/>';
     else o+=rect(b,'ov-sel');
+    if(!OVDIM[p.id]) o=o.replace(/class="ov-sel"(?![\s\S]*class="ov-sel")/,'class="ov-sel" style="stroke-dasharray:5 3"');
     var sr=box(b);
     // 치수
     var dy=sr[1]+sr[3]+13>PT+AH-4?sr[1]-9:sr[1]+sr[3]+13, dx=sr[0]+sr[2]+12>PL+AW-24?sr[0]-12:sr[0]+sr[2]+12;
@@ -783,7 +785,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
       '<line class="ov-dim" x1="'+f1(dx)+'" y1="'+f1(sr[1])+'" x2="'+f1(dx)+'" y2="'+f1(sr[1]+sr[3])+'"/><line class="ov-dim" x1="'+f1(dx-4)+'" y1="'+f1(sr[1])+'" x2="'+f1(dx+4)+'" y2="'+f1(sr[1])+'"/><line class="ov-dim" x1="'+f1(dx-4)+'" y1="'+f1(sr[1]+sr[3])+'" x2="'+f1(dx+4)+'" y2="'+f1(sr[1]+sr[3])+'"/>';
     var nm=p.t, nx=Math.min(Math.max(sr[0]+sr[2]/2,PL+4+tw(nm,13)/2),PL+AW-4-tw(nm,13)/2);
     lab(nm,nx,sr[1]-6,'middle','ov-sn',13,'',[[0,0],[0,-14],[0,sr[3]+34],[0,21]]);
-    if(p.nodim) dim=''; else {lab(String(rmm(h[1]-h[0])),sr[0]+sr[2]/2,dy+4,'middle','ov-dt',12,'',[[0,0],[0,-8],[0,8]]);
+    if(!OVDIM[p.id]) dim=''; else {lab(String(rmm(h[1]-h[0])),sr[0]+sr[2]/2,dy+4,'middle','ov-dt',12,'',[[0,0],[0,-8],[0,8]]);
     lab(String(rmm(v[1]-v[0])),dx,sr[1]+sr[3]/2+4,'middle','ov-dt',12,'',[[0,0],[0,-12],[0,12],[14,0]]);}
     // 선 나가는 곳
     var dots='', miss=[];
@@ -834,7 +836,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     function show(vn){ovCur=vn;$$('[data-ov]',root).forEach(function(b){b.setAttribute('aria-selected',b.getAttribute('data-ov')===vn?'true':'false');});
       $('.ovsvg',root).innerHTML=vn==='loc'?ovLoc(p):ovSVG(p,vn);
       var sv=$('.ovsvg svg',root),ms=sv&&sv.getAttribute('data-miss');
-      $('.ov-cap',root).textContent=vn==='loc'?'차 전체에서 이 부품이 있는 곳 (위에서 본 그림과 조수석 쪽에서 본 그림)':OVV[vn].cap+(p.nodim?' · 크기 실측 전이라 치수 생략':' · 치수는 대략값')+(ms?' · 좁아서 이름을 생략한 선: '+ms.split(',').join(', '):'');}
+      $('.ov-cap',root).textContent=vn==='loc'?'차 전체에서 이 부품이 있는 곳 (위에서 본 그림과 조수석 쪽에서 본 그림)':OVV[vn].cap+' · '+(OVDIM[p.id]||'크기 실측 전이라 대략적인 위치만 표시')+(ms?' · 좁아서 이름을 생략한 선: '+ms.split(',').join(', '):'');}
     $$('[data-ov]',root).forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-ov'));});});
     show(ovCur);
   }
