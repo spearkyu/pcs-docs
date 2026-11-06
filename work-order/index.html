@@ -154,6 +154,23 @@ small{font-size:13px}
 .tag{display:inline-block;font:600 11px var(--f-mono);padding:1px 7px;border-radius:5px;border:1px solid var(--line-strong);color:var(--mute);white-space:nowrap}
 .tag.ours{border-color:var(--ours);color:var(--ours)}
 
+/* 부품 2D 도면 */
+.ov{display:grid;gap:8px;min-width:0}
+.ovsvg svg{width:100%;max-width:470px;height:auto;display:block;margin:0 auto}
+.ov-frame{fill:var(--bg);stroke:var(--line)}
+.ov-ref{fill:var(--line);fill-opacity:.6;stroke:var(--line-strong);stroke-width:.8}
+.ov-ctx{fill:var(--card);fill-opacity:.8;stroke:var(--line-strong);stroke-width:1;stroke-dasharray:3 2}
+.ov-sel{fill:var(--c);fill-opacity:.22;stroke:var(--c);stroke-width:2.2}
+.ov-lt{fill:var(--mute);font:500 12px var(--f-body)}
+.ov-rt{fill:var(--mute);font:500 11px var(--f-body);font-style:italic}
+.ov-sn{fill:var(--c);font:700 13px var(--f-body);paint-order:stroke;stroke:var(--bg);stroke-width:3px}
+.ov-wt{font:700 11px var(--f-mono);paint-order:stroke;stroke:var(--bg);stroke-width:3px}
+.ov-dim{stroke:var(--ink);stroke-width:1}
+.ov-dt{fill:var(--ink);font:600 12px var(--f-mono);paint-order:stroke;stroke:var(--bg);stroke-width:3px}
+.ov-edge{fill:var(--mute);font:600 12px var(--f-body)}
+.ov-car{fill:var(--card);stroke:var(--line-strong);stroke-width:1.2}
+.ov-cap{font-size:12.5px;color:var(--mute);margin:0}
+
 /* 함체 도면 */
 .encsvg text{font-family:var(--f-body)}
 .e-out{fill:var(--card);stroke:var(--ink);stroke-width:2}
@@ -272,7 +289,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
 
 <header class="top wrap">
   <div class="t">
-    <div class="eyebrow">작업지시서 · v1.4 · 2026-11-06</div>
+    <div class="eyebrow">작업지시서 · v1.5 · 2026-11-06</div>
     <h1>PCS 차량 작업지시서</h1>
   </div>
   <div class="meta">
@@ -438,7 +455,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
   <div class="sub" data-subp="a-d" hidden>
     <div class="open-list">
       <div><b>⑪ 가스센서 위치</b><span>2열 안에서 정확한 위치</span></div>
-      <div><b>⑫ 후측방센서 부착 위치</b><span>뒷범퍼 가운데 정확한 높이·관통부 위치</span></div>
+      <div><b>⑫ 후측방센서 부착 위치</b><span>뒷범퍼 조수석 쪽 모서리 정확한 높이·관통부 위치</span></div>
       <div><b>빔프로젝터</b><span>설치 위치와 연결 방식</span></div>
       <div><b>디퓨저 컵홀더</b><span>좌·우 중 어느 쪽</span></div>
     </div>
@@ -524,9 +541,9 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     {id:'sen',n:11,g:'w4',t:'가스센서',sub:'위치 협의',where:'2열 (정확한 위치 협의)',b:[2252,2300,520,600,-45,45],tbd:1,
       say:'2열 승객 가까이, 통풍이 막히지 않는 곳에 고정합니다.',
       todo:['위치 확정 후 고정','V-05 4가닥 꼬임·차폐선 연결'],prep:['가스센서 모듈, 연결 케이블'],warn:['센서 선은 꼬임·차폐선으로 연장합니다.']},
-    {id:'rear',n:12,g:'ext',t:'후측방센서',sub:'차체 외관 · I2C · 보드 C',where:'차체 바깥, 테일게이트 쪽 뒷범퍼 가운데',b:[4716,4746,500,570,-35,35],
-      say:'후측방센서를 뒷범퍼 가운데 바깥면에 차량 뒤쪽을 향하게 붙이고, 선은 방수 처리한 관통부로 트렁크 안에 들여와 보드 C와 6가닥으로 연결합니다.',
-      todo:['뒷범퍼 가운데에 부착 (감지 방향은 차량 뒤쪽, 번호판·후방 카메라와 간섭 확인)','브래킷으로 범퍼에 단단히 고정 (도장·외관 손상 최소화)','차체 관통부 처리: 기존 고무 마개 활용 또는 방수 그로밋, 실리콘 실링','실외 구간 선은 방수 커넥터 + 주름관으로 보호','V-10 6가닥 연결 (5V·GND·SDA·SCL·WAKE_UP·MCU_INT)','함께 동작 확인 (실차에서 I2C 통신)'],
+    {id:'rear',n:12,g:'ext',t:'후측방센서',sub:'차체 외관 · I2C · 보드 C',where:'차체 바깥, 뒷범퍼 조수석 쪽 모서리 (테일게이트 쪽에서 봤을 때 오른쪽)',b:[4716,4746,500,570,-745,-675],
+      say:'후측방센서를 뒷범퍼 조수석 쪽 모서리 바깥면에 차량 뒤쪽을 향하게 붙이고, 선은 방수 처리한 관통부로 트렁크 안에 들여와 보드 C와 6가닥으로 연결합니다.',
+      todo:['뒷범퍼 조수석 쪽 모서리에 부착 (조수석 끝에서 약 15cm 안쪽, 감지 방향은 차량 뒤쪽, 번호판·후방 카메라와 간섭 확인)','브래킷으로 범퍼에 단단히 고정 (도장·외관 손상 최소화)','차체 관통부 처리: 기존 고무 마개 활용 또는 방수 그로밋, 실리콘 실링','실외 구간 선은 방수 커넥터 + 주름관으로 보호','V-10 6가닥 연결 (5V·GND·SDA·SCL·WAKE_UP·MCU_INT)','함께 동작 확인 (실차에서 I2C 통신)'],
       prep:['후측방센서 모듈, 부착 브래킷','방수 커넥터(6핀), 방수 그로밋, 실리콘 실런트','6~8심 차폐 케이블'],
       warn:['비·세차·먼지에 직접 노출됩니다. 센서 커넥터와 관통부는 반드시 방수 처리해 주세요.','센서 앞(감지 방향)을 금속 부품·번호판이 가리지 않게 붙여 주세요.','주행 진동·세차에도 떨어지지 않게 고정하고, 선은 배기·가동부를 피해 주세요.','I2C 선이 길어집니다. 꼬임·차폐선을 쓰고 실차에서 통신을 확인합니다.']},
     // 차량 기존 부품 (OCU 결선 대상)
@@ -560,7 +577,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     {id:'V-07',f:'pdc',to:'film',k:'pwr',n:2,t:'필름 구동선',cores:[['구동 출력 1','pwr'],['구동 출력 2','pwr']],note:'제어기 출력 사양 확인 후 절연·굵기 결정.',path:'우측 사이드실',p:[[3450,690,165],[3395,690,165],[3385,600,165],[3385,600,-660]].concat(sp('r',0),[[2560,900,-860],[2590,1080,-900]])},
     {id:'V-08',f:'enc',to:'led',k:'sig',n:2,t:'LED 신호선',cores:[['데이터','sig'],['GND','gnd']],note:'보드 C → LED 스트랩. 데이터와 GND를 함께. 우측 사이드실 → 2열 우측 도어 힌지 쪽으로 인입.',path:'우측 사이드실 → 도어',p:[gland('V-08'),[3395,690,-195],[3385,600,-300],[3385,600,-680]].concat(sp('r',20),[[2500,450,-858],[2500,700,-868],[2700,748,-842]])},
     {id:'V-09',f:'pb',to:'led',k:'pwr',n:2,t:'5V 전원',cores:[['5V +','pwr'],['5V −','gnd']],note:'파워뱅크 ② DC5V → LED 스트랩. 도어 힌지 쪽으로 인입.',path:'우측 사이드실 → 도어',p:[[4220,700,554],[4220,600,-690],[3400,600,-690]].concat(sp('r',40),[[2490,450,-848],[2490,710,-866],[2700,750,-834]])},
-    {id:'V-10',f:'enc',to:'rear',k:'sig',n:6,t:'후측방센서선',cores:[['5V','pwr'],['GND','gnd'],['SDA','sig'],['SCL','sig'],['WAKE_UP','sig'],['MCU_INT','sig']],note:'보드 C → 트렁크 덮개 아래 → 트렁크 뒤 가운데 차체 관통부(방수 그로밋) → 바깥 후측방센서. I2C 포함 6가닥, 꼬임·차폐선, 실외 구간은 방수 커넥터·주름관.',path:'트렁크 → 차체 외관',p:[gland('V-10'),[3395,690,-225],[3390,600,-330],[4575,600,-330],[4575,600,0],[4600,550,0],[4680,540,0],[4716,535,0]]},
+    {id:'V-10',f:'enc',to:'rear',k:'sig',n:6,t:'후측방센서선',cores:[['5V','pwr'],['GND','gnd'],['SDA','sig'],['SCL','sig'],['WAKE_UP','sig'],['MCU_INT','sig']],note:'보드 C → 트렁크 덮개 아래 → 트렁크 뒤 조수석 쪽 차체 관통부(방수 그로밋) → 바깥 후측방센서. I2C 포함 6가닥, 꼬임·차폐선, 실외 구간은 방수 커넥터·주름관.',path:'트렁크 → 차체 외관',p:[gland('V-10'),[3395,690,-225],[3390,600,-330],[4575,600,-330],[4575,600,-710],[4600,550,-710],[4680,540,-710],[4716,535,-710]]},
     {id:'T-1A',f:'pc',to:'enc',k:'usb',n:1,u:'개',t:'USB-A → 보드 A',cores:[['미니 PC USB-A ↔ 보드 A USB-C (A-C 케이블)','hub']],note:'2단 미니 PC → 1단 함체 USB 입구 → 보드 A USB-C. 서랍 여닫는 만큼 여유.',path:'트렁크 안',p:[[3466,830,-30],[3445,830,-30],[3445,790,-10],[3660,790,-10],[3660,690,-10],[3645,680,-10]]},
     {id:'T-1B',f:'pc',to:'enc',k:'usb',n:1,u:'개',t:'USB-C → 보드 B',cores:[['미니 PC USB-C ↔ 보드 B USB-C (C-C 케이블)','hub']],note:'2단 미니 PC → 1단 함체 USB 입구 → 보드 B USB-C. 서랍 여닫는 만큼 여유.',path:'트렁크 안',p:[[3614,830,-20],[3665,830,-20],[3665,700,-110],[3645,680,-110]]},
     {id:'T-1C',f:'pc',to:'enc',k:'usb',n:1,u:'개',t:'USB-C → 보드 C',cores:[['미니 PC USB-C ↔ 보드 C USB-C (C-C 케이블)','hub']],note:'2단 미니 PC → 1단 함체 USB 입구 → 보드 C USB-C. 서랍 여닫는 만큼 여유.',path:'트렁크 안',p:[[3614,830,20],[3675,830,20],[3675,700,-210],[3645,680,-210]]},
@@ -673,15 +690,15 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
     }
     h='<div class="d-head"><div class="d-title">'+numHTML(p)+'<h2>'+esc(p.t)+'</h2><span class="grp-tag">'+esc(G[p.g].t)+'</span></div>'+
       '<div class="where"><svg width="12" height="14" viewBox="0 0 12 14" aria-hidden="true" style="flex:0 0 auto;margin-top:3px"><path d="M6 13s5-4.6 5-8A5 5 0 0 0 1 5c0 3.4 5 8 5 8z" fill="var(--c)"/></svg>'+esc(p.where)+(p.est?' · 추정 위치':'')+'</div>'+
-      '<p class="big-note">'+esc(p.say)+'</p></div><div class="d-body">'+
+      '<p class="big-note">'+esc(p.say)+'</p></div><div class="d-body">'+(ovBB(p)?ovHTML():'')+
       '<div class="d-cols"><div class="blk"><div class="blk-h">연결할 선 '+wires.length+'개 · 번호를 누르면 3D에서 그 선만 보여요</div><div class="wires">'+(wires.length?wires.map(function(w){return wireCard(w,p.id);}).join(''):'<p class="mute">연결할 선 없음</p>')+'</div></div>'+
       '<div class="blk">'+(p.todo.length?'<div class="blk-h">할 일</div>'+todoHTML(p):'')+
       (p.prep.length?'<div class="blk ours"><div class="blk-h">애니랙티브 준비·지원</div>'+listHTML(p.prep)+'</div>':'')+
       (p.warn.length?'<div class="warn"><b>⚠ 주의</b>'+listHTML(p.warn)+'</div>':'')+'</div></div>'+
       (p.tpl?'<div class="fig" id="tplhost"></div>':'')+'</div>';
-    d.innerHTML=h;
+    d.innerHTML=h; var ovEl=$('.ov',d); if(ovEl) ovMount(ovEl,p);
     if(p.tpl){mountTpl(p.tpl); if(p.id==='enc'){$('#enc-svg').innerHTML=encSVG(); var bp=$('.bp',d); bp.innerHTML=boardPanelHTML(); boardPanelMount(bp);}}
-    if(p.id==='enc'){var il=document.createElement('div');il.className='blk';il.innerHTML='<div class="blk-h">함체 안 배선 '+IWINFO.length+'개 · 누르면 3D에서 그 선만 강조</div><div class="iwl">'+IWINFO.map(function(w,i){return '<button type="button" class="iwb'+(iwCur===i?' on':'')+'" data-iw="'+i+'"><i style="background:'+w.col+'"></i><span>'+esc(w.t)+'<small>'+esc(w.sub)+'</small></span></button>';}).join('')+'</div>';var db=$('.d-body',d);db.insertBefore(il,db.children[1]||null);}
+    if(p.id==='enc'){var il=document.createElement('div');il.className='blk';il.innerHTML='<div class="blk-h">함체 안 배선 '+IWINFO.length+'개 · 누르면 3D에서 그 선만 강조</div><div class="iwl">'+IWINFO.map(function(w,i){return '<button type="button" class="iwb'+(iwCur===i?' on':'')+'" data-iw="'+i+'"><i style="background:'+w.col+'"></i><span>'+esc(w.t)+'<small>'+esc(w.sub)+'</small></span></button>';}).join('')+'</div>';var db=$('.d-body',d);db.insertBefore(il,$('.fig',db)||null);}
     bindChecks(d);
   }
   function mountTpl(id){
@@ -709,6 +726,117 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
         renderChips();
       });
     });
+  }
+
+  /* ---------- 부품 2D 도면 (위에서·정면·측면 + 차 안 위치) ----------
+     정면 = 테일게이트 쪽에서 앞을 보고 그린 그림, 측면 = 조수석 쪽에서 본 그림 */
+  function ovBB(p){if(p.b)return p.b;if(p.cyl){var c=p.cyl;return [c[0]-c[2],c[0]+c[2],c[3],c[4],c[1]-c[2],c[1]+c[2]];}
+    var q=p.plane||p.frame;return q?[q[0],q[1],q[2],q[3],q[4]-4,q[4]+4]:null;}
+  // 차체 기준면 (주변 위치를 알 수 있게 회색으로)
+  var OVREF=[
+    {t:'트렁크 바닥',b:[3350,4715,610,640,-860,860]},
+    {t:'실내 바닥',b:[1100,3350,360,390,-900,900]},
+    {t:'트렁크 옆벽',b:[3350,4715,640,1150,860,890]},{t:'트렁크 옆벽',b:[3350,4715,640,1150,-890,-860]},
+    {t:'2열 등받이',b:[3250,3350,640,1150,-820,820]},
+    {t:'뒷범퍼',b:[4600,4715,380,640,-900,900]},
+    {t:'2열 우측 도어',b:[2480,3300,420,1080,-910,-860]},
+    {t:'대시보드',b:[1100,1350,700,1050,-900,900]},
+    {t:'1열 좌석',b:[1750,2300,390,1300,150,700]},{t:'1열 좌석',b:[1750,2300,390,1300,-700,-150]},
+    {t:'1단·2단 선반',b:[3420,3820,782,788,-300,300],only:'drw',nv:'top'}];
+  var OVV={
+    top:{t:'위에서',cap:'위에서 내려다본 그림 (위쪽이 차 앞쪽)',H:function(b){return [-b[5],-b[4]];},V:function(b){return [b[0],b[1]];},D:function(b){return [b[2],b[3]];},ph:function(q){return -q[2];},pv:function(q){return q[0];},e:['운전석','▲ 차 앞쪽','조수석','▼ 테일게이트']},
+    front:{t:'정면',cap:'테일게이트 쪽에서 앞을 보고 그린 그림',H:function(b){return [-b[5],-b[4]];},V:function(b){return [-b[3],-b[2]];},D:function(b){return [b[0],b[1]];},ph:function(q){return -q[2];},pv:function(q){return -q[1];},e:['운전석','위','조수석','아래']},
+    side:{t:'측면',cap:'조수석 쪽에서 본 그림 (오른쪽이 차 앞쪽)',H:function(b){return [-b[1],-b[0]];},V:function(b){return [-b[3],-b[2]];},D:function(b){return [b[4],b[5]];},ph:function(q){return -q[0];},pv:function(q){return -q[1];},e:['◀ 테일게이트','위','차 앞쪽 ▶','아래']}};
+  var ovN=0, ovCur='top';
+  function f1(n){return n.toFixed(1);}
+  function rmm(n){return Math.round(n/10)*10;}
+  function wEnd(w,id){var a=w.f===id?w.p[0]:w.p[w.p.length-1], n=w.f===id?w.p[1]:w.p[w.p.length-2];return [a,n||a];}
+  function tw(t,fs){var w=0;for(var i=0;i<t.length;i++)w+=t.charCodeAt(i)>255?fs:fs*.62;return w;}
+  function ovSVG(p,vn){
+    var b=ovBB(p), V=OVV[vn], h=V.H(b), v=V.V(b), sz=Math.max(h[1]-h[0],v[1]-v[0]), m=Math.max(180,sz*.45);
+    var R=[h[0]-m,h[1]+m,v[0]-m,v[1]+m], AW=300, s=Math.min(AW/(R[1]-R[0]),300/(R[3]-R[2]));
+    var add=(AW/s-(R[1]-R[0]))/2; R[0]-=add; R[1]+=add;
+    var PL=20,PT=24,PB=26,AH=(R[3]-R[2])*s,W=AW+PL*2,HT=PT+AH+PB,cid='ovc'+(++ovN);
+    function X(a){return PL+(a-R[0])*s;} function Y(a){return PT+(a-R[2])*s;}
+    function box(bx){var hh=V.H(bx),vv=V.V(bx),x0=Math.max(X(hh[0]),PL-2),x1=Math.min(X(hh[1]),PL+AW+2),y0=Math.max(Y(vv[0]),PT-2),y1=Math.min(Y(vv[1]),PT+AH+2);return [x0,y0,Math.max(1.5,x1-x0),Math.max(1.5,y1-y0)];}
+    function rect(bx,cls){var r=box(bx);return '<rect class="'+cls+'" x="'+f1(r[0])+'" y="'+f1(r[1])+'" width="'+f1(r[2])+'" height="'+f1(r[3])+'"/>';}
+    function inR(bx){var hh=V.H(bx),vv=V.V(bx);return hh[1]>R[0]&&hh[0]<R[1]&&vv[1]>R[2]&&vv[0]<R[3];}
+    var d0=V.D(b); function dep(bx,mg){var d=V.D(bx);return d[1]>d0[0]-mg&&d[0]<d0[1]+mg;}
+    // 글자 자리: 겹치면 다른 자리를 찾고, 없으면 생략
+    var placed=[], labs='';
+    function free(r){if(r[0]<PL-1||r[0]+r[2]>PL+AW+1||r[1]<PT-1||r[1]+r[3]>PT+AH+1)return false;for(var i=0;i<placed.length;i++){var q=placed[i];if(r[0]<q[0]+q[2]&&q[0]<r[0]+r[2]&&r[1]<q[1]+q[3]&&q[1]<r[1]+r[3])return false;}return true;}
+    function lab(t,x,y,anc,cls,fs,sty,tries){var w=tw(t,fs);for(var i=0;i<tries.length;i++){var xx=x+tries[i][0],yy=y+tries[i][1],x0=anc==='middle'?xx-w/2:anc==='end'?xx-w:xx,r=[x0-1,yy-fs+1,w+2,fs+2];
+      if(free(r)){placed.push(r);labs+='<text class="'+cls+'" x="'+f1(xx)+'" y="'+f1(yy)+'"'+(anc!=='start'?' text-anchor="'+anc+'"':'')+(sty?' style="'+sty+'"':'')+'>'+esc(t)+'</text>';return true;}}return false;}
+    function block(r){placed.push(r);}
+    var o='<svg viewBox="0 0 '+W+' '+f1(HT)+'" role="img" aria-label="'+esc(p.t)+' '+V.t+' 도면"><defs><clipPath id="'+cid+'"><rect x="'+PL+'" y="'+PT+'" width="'+AW+'" height="'+f1(AH)+'"/></clipPath></defs>';
+    o+='<rect class="ov-frame" x="'+PL+'" y="'+PT+'" width="'+AW+'" height="'+f1(AH)+'" rx="4"/><g clip-path="url(#'+cid+')">';
+    var refs=OVREF.filter(function(r){return !(r.only&&r.only!==p.id||r.nv===vn)&&inR(r.b)&&dep(r.b,150);});
+    var ctx=PARTS.filter(function(c){var bx=ovBB(c);return c!==p&&bx&&inR(bx)&&dep(bx,400);});
+    refs.forEach(function(r){o+=rect(r.b,'ov-ref');});
+    ctx.forEach(function(c){o+=rect(ovBB(c),'ov-ctx');});
+    if(p.cyl&&vn==='top') o+='<circle class="ov-sel" cx="'+f1(X(-p.cyl[1]))+'" cy="'+f1(Y(p.cyl[0]))+'" r="'+f1(p.cyl[2]*s)+'"/>';
+    else o+=rect(b,'ov-sel');
+    var sr=box(b);
+    // 치수
+    var dy=sr[1]+sr[3]+13>PT+AH-4?sr[1]-9:sr[1]+sr[3]+13, dx=sr[0]+sr[2]+12>PL+AW-24?sr[0]-12:sr[0]+sr[2]+12;
+    var dim='<line class="ov-dim" x1="'+f1(sr[0])+'" y1="'+f1(dy)+'" x2="'+f1(sr[0]+sr[2])+'" y2="'+f1(dy)+'"/><line class="ov-dim" x1="'+f1(sr[0])+'" y1="'+f1(dy-4)+'" x2="'+f1(sr[0])+'" y2="'+f1(dy+4)+'"/><line class="ov-dim" x1="'+f1(sr[0]+sr[2])+'" y1="'+f1(dy-4)+'" x2="'+f1(sr[0]+sr[2])+'" y2="'+f1(dy+4)+'"/>'+
+      '<line class="ov-dim" x1="'+f1(dx)+'" y1="'+f1(sr[1])+'" x2="'+f1(dx)+'" y2="'+f1(sr[1]+sr[3])+'"/><line class="ov-dim" x1="'+f1(dx-4)+'" y1="'+f1(sr[1])+'" x2="'+f1(dx+4)+'" y2="'+f1(sr[1])+'"/><line class="ov-dim" x1="'+f1(dx-4)+'" y1="'+f1(sr[1]+sr[3])+'" x2="'+f1(dx+4)+'" y2="'+f1(sr[1]+sr[3])+'"/>';
+    var nm=p.t, nx=Math.min(Math.max(sr[0]+sr[2]/2,PL+4+tw(nm,13)/2),PL+AW-4-tw(nm,13)/2);
+    lab(nm,nx,sr[1]-6,'middle','ov-sn',13,'',[[0,0],[0,-14],[0,sr[3]+34],[0,21]]);
+    lab(String(rmm(h[1]-h[0])),sr[0]+sr[2]/2,dy+4,'middle','ov-dt',12,'',[[0,0],[0,-8],[0,8]]);
+    lab(String(rmm(v[1]-v[0])),dx,sr[1]+sr[3]/2+4,'middle','ov-dt',12,'',[[0,0],[0,-12],[0,12],[14,0]]);
+    // 선 나가는 곳
+    var dots='', miss=[];
+    wiresOf(p.id).forEach(function(w,k){var e=wEnd(w,p.id),a=e[0],n=e[1],ax=X(V.ph(a)),ay=Y(V.pv(a)),nx2=X(V.ph(n)),ny=Y(V.pv(n)),L=Math.hypot(nx2-ax,ny-ay),col='var(--'+K[w.k]+')';
+      if(L>1){var t=Math.min(1,22/L);dots+='<line x1="'+f1(ax)+'" y1="'+f1(ay)+'" x2="'+f1(ax+(nx2-ax)*t)+'" y2="'+f1(ay+(ny-ay)*t)+'" style="stroke:'+col+';stroke-width:2.5;stroke-linecap:round"/>';}
+      dots+='<circle cx="'+f1(ax)+'" cy="'+f1(ay)+'" r="3.6" style="fill:'+col+';stroke:var(--bg);stroke-width:1"/>';
+      if(!lab(w.id,ax,ay,'start','ov-wt',11,'fill:'+col,[[5,-5],[5,12],[-5,-5],[-5,12],[5,-17],[5,24],[-5,-17],[-5,24],[5,-29],[5,36]].map(function(q,i){return i%4>1?[q[0]-tw(w.id,11),q[1]]:q;}))) miss.push(w.id);});
+    ctx.forEach(function(c){var q=box(ovBB(c)),t=c.t;if(tw(t,12)>q[2]+10)t=c.n?String(c.n):(c.u||t);if(q[3]<12&&q[2]<12)return;
+      lab(t,q[0]+q[2]/2,q[1]+q[3]/2+4,'middle','ov-lt',12,'',[[0,0],[0,-11],[0,11],[0,-q[3]/2-6],[0,q[3]/2+14]]);});
+    refs.forEach(function(r){var q=box(r.b);if(q[2]<60&&q[3]<60)return;
+      if(q[3]<16) lab(r.t,Math.max(q[0],PL)+4,q[1]-3,'start','ov-rt',11,'',[[0,0],[0,q[3]+15],[120,0]]);
+      else if(q[2]<16) lab(r.t,q[0]+q[2]+3,Math.max(q[1],PT)+12,'start','ov-rt',11,'',[[0,0],[0,20],[-q[2]-6-tw(r.t,11),0]]);
+      else lab(r.t,q[0]+4,q[1]+12,'start','ov-rt',11,'',[[0,0],[0,q[3]-16],[q[2]-8-tw(r.t,11),0]]);});
+    o+=dim+dots+labs+'</g>';
+    o+='<text class="ov-edge" x="'+PL+'" y="'+(PT-8)+'">'+V.e[0]+'</text><text class="ov-edge" x="'+(PL+AW/2)+'" y="'+(PT-8)+'" text-anchor="middle">'+V.e[1]+'</text><text class="ov-edge" x="'+(PL+AW)+'" y="'+(PT-8)+'" text-anchor="end">'+V.e[2]+'</text>';
+    o+='<text class="ov-edge" x="'+(PL+AW/2)+'" y="'+f1(PT+AH+17)+'" text-anchor="middle">'+V.e[3]+'</text>';
+    if(miss.length) o=o.replace('<svg ','<svg data-miss="'+miss.join(',')+'" ');
+    return o+'</svg>';
+  }
+  function ovLoc(p){
+    var s=320/4715, PL=20, W=360, T0=26, S0=T0+1890*s+40, HT=S0+1800*s+22, b=ovBB(p);
+    function X(x){return PL+(4715-x)*s;} function Zt(z){return T0+(945-z)*s;} function Ys(y){return S0+(1750-y)*s;}
+    var o='<svg viewBox="0 0 '+W+' '+f1(HT)+'" role="img" aria-label="'+esc(p.t)+' 차 안 위치">';
+    o+='<text class="ov-edge" x="'+PL+'" y="'+(T0-9)+'">위에서 · 운전석</text><text class="ov-edge" x="'+(PL+320)+'" y="'+(T0-9)+'" text-anchor="end">차 앞쪽 ▶</text>';
+    o+='<rect class="ov-car" x="'+PL+'" y="'+T0+'" width="320" height="'+f1(1890*s)+'" rx="18"/>';
+    [[1750,2300,150,700],[1750,2300,-700,-150],[2650,3250,-800,800]].forEach(function(r){o+='<rect class="ov-ref" x="'+f1(X(r[1]))+'" y="'+f1(Zt(r[3]))+'" width="'+f1((r[1]-r[0])*s)+'" height="'+f1((r[3]-r[2])*s)+'" rx="3"/>';});
+    o+='<rect x="'+f1(X(4600))+'" y="'+f1(Zt(860))+'" width="'+f1(1250*s)+'" height="'+f1(1720*s)+'" style="fill:none;stroke:var(--line-strong);stroke-dasharray:4 3"/><text class="ov-rt" x="'+f1(X(4600)+4)+'" y="'+f1(Zt(860)+12)+'">트렁크</text>';
+    o+='<text class="ov-edge" x="'+PL+'" y="'+f1(T0+1890*s+14)+'">◀ 테일게이트 · 조수석</text>';
+    // 옆에서 (조수석 쪽)
+    o+='<text class="ov-edge" x="'+PL+'" y="'+(S0-8)+'">옆에서 (조수석 쪽)</text>';
+    var sil=[[0,450],[0,950],[1150,1080],[1950,1640],[3950,1660],[4600,1300],[4715,1050],[4715,420]];
+    o+='<path class="ov-car" d="M'+sil.map(function(q){return f1(X(q[0]))+' '+f1(Ys(q[1]));}).join(' L')+' Z"/>';
+    [950,3770].forEach(function(x){o+='<circle cx="'+f1(X(x))+'" cy="'+f1(Ys(360))+'" r="'+f1(360*s)+'" style="fill:var(--line-strong)"/>';});
+    o+='<line x1="'+PL+'" y1="'+f1(Ys(0))+'" x2="'+(PL+320)+'" y2="'+f1(Ys(0))+'" style="stroke:var(--line-strong)"/>';
+    PARTS.forEach(function(c){var bx=ovBB(c);if(!bx||c===p)return;
+      o+='<rect class="ov-ctx" x="'+f1(X(bx[1]))+'" y="'+f1(Zt(bx[5]))+'" width="'+f1(Math.max(2,(bx[1]-bx[0])*s))+'" height="'+f1(Math.max(2,(bx[5]-bx[4])*s))+'"/>';
+      o+='<rect class="ov-ctx" x="'+f1(X(bx[1]))+'" y="'+f1(Ys(bx[3]))+'" width="'+f1(Math.max(2,(bx[1]-bx[0])*s))+'" height="'+f1(Math.max(2,(bx[3]-bx[2])*s))+'"/>';});
+    [[Zt(b[5]),Zt(b[4])],[Ys(b[3]),Ys(b[2])]].forEach(function(yy){var x0=X(b[1]),w=Math.max(4,(b[1]-b[0])*s),h=Math.max(4,yy[1]-yy[0]);
+      o+='<rect class="ov-sel" style="fill-opacity:.6" x="'+f1(x0)+'" y="'+f1(yy[0])+'" width="'+f1(w)+'" height="'+f1(h)+'"/><circle cx="'+f1(x0+w/2)+'" cy="'+f1(yy[0]+h/2)+'" r="'+f1(Math.max(w,h)/2+7)+'" style="fill:none;stroke:var(--c);stroke-width:2"/>';});
+    return o+'</svg>';
+  }
+  function ovHTML(){
+    return '<div class="blk ov"><div class="blk-h">2D 도면 · 단위 mm · 색 = 이 부품, 점선 = 주변 부품, ● = 선 나가는 곳</div>'+
+      '<div class="subtabs" role="tablist">'+[['loc','차 안 위치'],['top','위에서'],['front','정면'],['side','측면']].map(function(t){return '<button type="button" class="sbtn" role="tab" data-ov="'+t[0]+'" aria-selected="'+(ovCur===t[0])+'">'+t[1]+'</button>';}).join('')+'</div>'+
+      '<div class="ovsvg"></div><p class="ov-cap"></p></div>';
+  }
+  function ovMount(root,p){
+    function show(vn){ovCur=vn;$$('[data-ov]',root).forEach(function(b){b.setAttribute('aria-selected',b.getAttribute('data-ov')===vn?'true':'false');});
+      $('.ovsvg',root).innerHTML=vn==='loc'?ovLoc(p):ovSVG(p,vn);
+      var sv=$('.ovsvg svg',root),ms=sv&&sv.getAttribute('data-miss');
+      $('.ov-cap',root).textContent=vn==='loc'?'차 전체에서 이 부품이 있는 곳 (위에서 본 그림과 조수석 쪽에서 본 그림)':OVV[vn].cap+' · 치수는 대략값'+(ms?' · 좁아서 이름을 생략한 선: '+ms.split(',').join(', '):'');}
+    $$('[data-ov]',root).forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-ov'));});});
+    show(ovCur);
   }
 
   /* ---------- 함체 모형 도면 ---------- */
@@ -1134,7 +1262,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
           at(B(6,h+30,d+30,M(0x6b6f74,.5,.6)),b[0]-3,cy,cz);                    // 부착 브래킷 (범퍼 바깥면)
           at(rbox(w,h,d,8,M(0x1b1d20,.4,.1)),cx,cy,cz);                          // 센서 본체
           at(B(2,h*.7,d*.8,M(0x2a3a4a,.2,.3)),b[1]+1,cy,cz);                    // 감지면 (차량 뒤쪽)
-          at(C(10,14,M(0x111111,.6),16),4600,550,0).rotation.z=Math.PI/2;       // 차체 관통부 (방수 그로밋)
+          at(C(10,14,M(0x111111,.6),16),4600,550,cz).rotation.z=Math.PI/2;       // 차체 관통부 (방수 그로밋)
           break;
         default:
           at(rbox(w,h,d,6,M(0x2b2e33,.5,0,op)),cx,cy,cz);
@@ -1210,7 +1338,7 @@ footer{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-si
       if(sel.k==='part'){var g=groups[sel.id];if(sel.id==='enc'){var c=new T.Box3().setFromObject(g).getCenter(new T.Vector3());pressed(null);fly([c.x+760,c.y+110,c.z+140],[c.x,c.y-10,c.z]);return;}
         if(sel.id==='drw'){pressed(null);fly([5100,1500,900],[3620,850,0]);return;}
         if(sel.id==='led'){pressed(null);fly([3050,1000,-250],[2880,740,-850]);return;}
-        if(sel.id==='rear'){pressed(null);fly([6500,1150,900],[4730,540,0]);return;}
+        if(sel.id==='rear'){pressed(null);fly([6400,1100,-100],[4730,540,-710]);return;}
         focusObj(g,sel.id==='film'?1800:p0(sel.id)?1700:1300);return;}
       focusObj(wm[sel.id],1400);
     }
